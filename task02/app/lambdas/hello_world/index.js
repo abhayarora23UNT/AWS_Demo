@@ -11,6 +11,7 @@ exports.handler = async (event) => {
         const successResponse = {
             statusCode: 200,
             body: JSON.stringify({
+                statusCode: 200,
                 message: 'Hello from Lambda',
             }),
         };
@@ -20,6 +21,7 @@ exports.handler = async (event) => {
         const failedResponse = {
             statusCode: 400,
             body: JSON.stringify({
+                statusCode: 400,
                 message: `Bad request syntax or unsupported method. Request path: ${httpPath}. HTTP method: ${httpMethod}`,
             }),
         };

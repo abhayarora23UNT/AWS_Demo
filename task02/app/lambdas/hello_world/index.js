@@ -1,24 +1,24 @@
 exports.handler = async (event) => {
-    console.log("http event ",event)
-    const httpMethod=event.requestContext.http.method
-    const httpPath=event.requestContext.http.path
-    console.log("httpMethod ",httpMethod)
-    console.log("httpPath ",httpPath)
+    console.log("http event ", event)
+    const httpMethod = event.requestContext.http.method
+    const httpPath = event.requestContext.http.path
+    console.log("httpMethod ", httpMethod)
+    console.log("httpPath ", httpPath)
+
+
     if (httpMethod === 'GET' && httpPath === '/hello') {
-        return {
+        console.log("inside success ")
+        const successResponse = {
             statusCode: 200,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            message: 'Hello from Lambda'
+            message: 'Hello from Lambda',
         };
+        return successResponse;
     } else {
-        return {
-            statusCode: 404,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+        console.log("inside failure ")
+        const failedResponse = {
+            statusCode: 400,
             message: `Bad request syntax or unsupported method. Request path: ${httpPath}. HTTP method: ${httpMethod}`
         };
+        return failedResponse;
     }
 };

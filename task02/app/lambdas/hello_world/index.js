@@ -1,4 +1,5 @@
 exports.handler = async (event) => {
+    console.log("http event ",event)
     if (event.httpMethod === 'GET' && event.path === '/hello') {
         return {
             statusCode: 200,

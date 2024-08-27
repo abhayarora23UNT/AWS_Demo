@@ -27,23 +27,18 @@
   "task3_api": {
     "resource_type": "api_gateway",
     "deploy_stage": "api",
-    "dependencies": [
-      {
-        "resource_name": "hello_world",
-        "resource_type": "lambda"
-      }
-    ],
     "resources": {
       "/hello": {
-        "enable_cors": false,
-        "GET":{
-          "integration_request_body_template": {},
+        "GET": {
           "authorization_type": "NONE",
           "integration_type": "lambda",
+          "lambda_name": "hello_world",
+          "api_key_required": false,
           "method_request_parameters": {},
-          "default_error_pattern": true,
-          "integration_passthrough_behavior": "WHEN_NO_TEMPLATES",
-          "lambda_name": "hello_world"
+          "integration_request_body_template": {},
+          "responses": [],
+          "integration_responses": [],
+          "default_error_pattern": true
         }
       }
     }

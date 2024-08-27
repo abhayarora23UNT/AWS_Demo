@@ -30,6 +30,7 @@
     "resources": {
       "/hello": {
         "GET": {
+          "enable_proxy": true,
           "authorization_type": "NONE",
           "integration_type": "lambda",
           "lambda_name": "hello_world",

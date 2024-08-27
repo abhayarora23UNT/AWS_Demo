@@ -1,7 +1,7 @@
 exports.handler = async (event) => {
     console.log("http event ",event)
-    const httpMethod = event.requestContext.http.method
-    const httpPath = event.requestContext.http.path
+    const httpMethod = event.httpMethod
+    const httpPath = event.path
     const buildResponse = (statusCodeVal, messageVal) => ({
         statusCode: statusCodeVal,
         body: JSON.stringify({ statusCode: statusCodeVal, message: messageVal }),

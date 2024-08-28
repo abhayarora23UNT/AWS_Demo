@@ -8,7 +8,12 @@
   "memory": 128,
   "timeout": 100,
   "lambda_path": "lambdas/sns_handler",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "resource_name": "lambda_topic",
+      "resource_type": "sns_topic_trigger"
+    }
+  ],
   "event_sources": [
     {
       "resource_type": "sns_topic_trigger",

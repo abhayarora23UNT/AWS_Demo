@@ -10,8 +10,8 @@
   "lambda_path": "lambdas/sqs_handler",
   "dependencies": [
     {
-      "resource_name": "${sqs_queue_name}",
-      "resource_type": "async_queue"
+      "resource_name": "async_queue",
+      "resource_type": "sqs_queue"
     }
   ],
   "event_sources": [{

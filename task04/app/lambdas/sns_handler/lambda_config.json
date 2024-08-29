@@ -6,7 +6,7 @@
   "iam_role_name": "sns_handler-role",
   "runtime": "nodejs20.x",
   "memory": 128,
-  "timeout": 100,
+  "timeout": 300,
   "lambda_path": "lambdas/sns_handler",
   "dependencies": [
     {

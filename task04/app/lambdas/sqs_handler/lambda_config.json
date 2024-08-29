@@ -17,7 +17,7 @@
   "event_sources": [{
     "target_queue": "async_queue",
     "resource_type": "sqs_trigger",
-    "batch_size": 1
+    "batch_size": 10
   }],
   "env_variables": {},
   "publish_version": true,

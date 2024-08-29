@@ -20,7 +20,7 @@
     "batch_size": 10
   }],
   "env_variables": {},
-  "publish_version": true,
+  "publish_version": false,
   "url_config": {},
   "ephemeral_storage": 512
 }

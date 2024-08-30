@@ -43,9 +43,13 @@ exports.handler = async (event) => {
         console.log('dynamoDbResp: ', dynamoDbResp);
 
         if (dynamoDbResp.$metadata.httpStatusCode == 200) {
+            const response = {
+                statusCode: 201,
+                event: eventData
+            };
             return {
                 statusCode: 201,
-                body: JSON.stringify({ event: eventData }),
+                body: JSON.stringify(response),
             };
         } else {
             return {

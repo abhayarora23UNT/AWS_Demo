@@ -1,19 +1,16 @@
-const AWS = require('aws-sdk');
-AWS.config.update({ region: "eu-central-1" });
+// Import required classes from AWS SDK v3
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { PutCommand } = require('@aws-sdk/lib-dynamodb')
 const { v4: uuidv4 } = require('uuid');
-const dynamodb = new AWS.DynamoDB.DocumentClient();
-
 const TABLE_NAME = 'Events';
 
 exports.handler = async (event) => {
     try {
-        console.log("+++dynamo event is ", event)
-        // Parse the request body
+        const dynamoClient = new DynamoDBClient({ region: 'eu-central-1' });
+        console.log("+++dynamoClient is ", dynamoClient);
+        console.log("+++lambda event is ", event);
         const body = JSON.parse(event.body);
-
-        // Extract the principalId and content from the request body
         const { principalId, content } = body;
-
         // Validate input
         if (principalId === undefined || content === undefined) {
             return {
@@ -22,39 +19,47 @@ exports.handler = async (event) => {
             };
         }
 
-        // Generate a unique ID for the event
         const eventId = uuidv4();
-
-        // Get the current timestamp in ISO 8601 format
         const createdAt = new Date().toISOString();
 
-        // Prepare the event data
         const eventData = {
             id: eventId,
             principalId: principalId,
             createdAt: createdAt,
-            body: content,
+            body: content
         };
 
         console.log('dynamo db eventData:', JSON.stringify(eventData));
-        // Save the event data to DynamoDB
-        const dynamoDbResp = await dynamodb.put({
-            TableName: TABLE_NAME,
-            Item: eventData,
-        }).promise();
 
-        console.log('dynamoDbResp promise:', dynamoDbResp);
-        // Return the created event as the response
-        return {
-            statusCode: 201,
-            body: JSON.stringify({ event: eventData }),
+        const params = {
+            TableName: TABLE_NAME,
+            Item: eventData
         };
+
+        const command = new PutCommand(params);
+        console.log("+++put command is ", command);
+        const dynamoDbResp = await dynamoClient.send(command);
+
+        console.log('dynamoDbResp: ', dynamoDbResp);
+
+        if (dynamoDbResp.$metadata.httpStatusCode == 200) {
+            return {
+                statusCode: 201,
+                body: JSON.stringify({ event: eventData }),
+            };
+        } else {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ message: 'Error while trying to put item in Dynamo DB', error: error.message }),
+            };
+        }
+
     } catch (error) {
         // Handle any errors
-        console.error('apiHandlar Error:', error);
+        console.error('apiHandler Error:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error', error: error.message }),
+            body: JSON.stringify({ message: 'Internal server error while trying to put item in Dynamo DB', error: error.message }),
         };
     }
 };

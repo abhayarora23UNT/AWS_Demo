@@ -6,7 +6,7 @@ const TABLE_NAME = 'Events';
 
 exports.handler = async (event) => {
     try {
-        console.log("+++dynamo event is ",event)
+        console.log("+++dynamo event is ", event)
         // Parse the request body
         const body = JSON.parse(event.body);
 
@@ -35,13 +35,14 @@ exports.handler = async (event) => {
             body: content,
         };
 
-        console.error('dynamo db eventData:', JSON.stringify(eventData));
+        console.log('dynamo db eventData:', JSON.stringify(eventData));
         // Save the event data to DynamoDB
-        await dynamodb.put({
+        const dynamoDbResp = await dynamodb.put({
             TableName: TABLE_NAME,
             Item: eventData,
         }).promise();
 
+        console.log('dynamoDbResp promise:', dynamoDbResp);
         // Return the created event as the response
         return {
             statusCode: 201,

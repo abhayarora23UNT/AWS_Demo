@@ -35,6 +35,7 @@ exports.handler = async (event) => {
             body: content,
         };
 
+        console.error('dynamo db eventData:', JSON.stringify(eventData));
         // Save the event data to DynamoDB
         await dynamodb.put({
             TableName: TABLE_NAME,
@@ -48,7 +49,7 @@ exports.handler = async (event) => {
         };
     } catch (error) {
         // Handle any errors
-        console.error('Error:', error);
+        console.error('apiHandlar Error:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ message: 'Internal server error', error: error.message }),

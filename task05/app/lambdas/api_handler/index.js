@@ -21,7 +21,7 @@ exports.handler = async (event) => {
 
         const eventId = uuidv4();
         const createdAt = new Date().toISOString();
-
+        console.log("+++dynamo object data content is ", content);
         const eventData = {
             id: eventId,
             principalId: principalId,

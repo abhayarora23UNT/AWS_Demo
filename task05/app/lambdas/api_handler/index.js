@@ -2,7 +2,7 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { PutCommand } = require('@aws-sdk/lib-dynamodb')
 const { v4: uuidv4 } = require('uuid');
-const TABLE_NAME = 'cmtr-bd1b882e-Events';
+const TABLE_NAME = 'cmtr-bd1b882e-Events-test';
 
 exports.handler = async (event) => {
     try {

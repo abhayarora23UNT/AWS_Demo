@@ -1,0 +1,15 @@
+{
+  "name": "uuid_generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/node-http-handler": "^3.374.0",
+    "@types/aws-lambda": "^8.10.145",
+    "aws-sdk": "^2.1686.0",
+    "uuid": "^10.0.0"
+  }
+}

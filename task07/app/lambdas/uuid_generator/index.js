@@ -5,16 +5,13 @@ const BUCKET_NAME = 'cmtr-bd1b882e-uuid-storage-test'; // Replace with your actu
 
 exports.handler = async (event) => {
     try {
-        // Get current time in ISO format for filename (without milliseconds)
         const now = new Date();
-        const startTime = now.toISOString().replace(/\.\d+Z$/, 'Z'); // Remove milliseconds
-
+        const startTime = now.toISOString(); // Example: "2024-01-01T00:00:00.000Z"
         const uuids = Array.from({ length: 10 }, () => uuid.v4());
         const fileContent = JSON.stringify({
             ids: uuids
-        }, null, 2);
+        }, null, 2); // Pretty print with indentation of 2 spaces
 
-        // Define the file name including execution start time (matching the expected format)
         const fileName = `${startTime}`;
 
         const params = {

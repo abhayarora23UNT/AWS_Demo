@@ -1,24 +1,20 @@
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
 const s3 = new AWS.S3();
-const BUCKET_NAME = 'cmtr-bd1b882e-uuid-storage-test'; // Replace with your S3 bucket name
+const BUCKET_NAME = 'cmtr-bd1b882e-uuid-storage-test';
 
 exports.handler = async (event) => {
-    // Get current time in ISO format for filename
+    
     const startTime = new Date().toISOString();
-    
-    // Generate 10 random UUIDs
+    console.log("lambda event is ",event)
+    console.log("startTime is ",startTime)
+
     const uuids = Array.from({ length: 10 }, () => uuid.v4());
-    
-    // Create JSON content with UUIDs
     const fileContent = JSON.stringify({
         ids: uuids
-    }, null, 2); // Pretty print with indentation of 2 spaces
+    }, null, 2); 
 
-    // Define the file name including execution start time
     const fileName = `${startTime}.json`;
-
-    // Parameters for S3 upload
     const params = {
         Bucket: BUCKET_NAME,
         Key: fileName,
@@ -27,7 +23,7 @@ exports.handler = async (event) => {
     };
 
     try {
-        // Upload file to S3
+        console.log("params is ",params)
         await s3.putObject(params).promise();
         console.log(`File uploaded successfully: ${fileName}`);
 

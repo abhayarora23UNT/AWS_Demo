@@ -1,28 +1,28 @@
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
 const s3 = new AWS.S3();
-const BUCKET_NAME = 'cmtr-bd1b882e-uuid-storage-test';
+const BUCKET_NAME = 'cmtr-bd1b882e-uuid-storage-test'; // Replace with your actual S3 bucket name
 
 exports.handler = async (event) => {
-    
-    const startTime = new Date().toISOString();
-    console.log("lambda event is ",event)
-    console.log("startTime is ",startTime)
-
-    const uuids = Array.from({ length: 10 }, () => uuid.v4());
-    const fileContent = JSON.stringify({
-        ids: uuids
-    }, null, 2); 
-
-    const fileName = `${startTime}.json`;
-    const params = {
-        Bucket: BUCKET_NAME,
-        Key: fileName,
-        Body: fileContent,
-        ContentType: 'application/json'
-    };
-
     try {
+        // Get current time in ISO format for filename (without milliseconds)
+        const now = new Date();
+        const startTime = now.toISOString().replace(/\.\d+Z$/, 'Z'); // Remove milliseconds
+
+        const uuids = Array.from({ length: 10 }, () => uuid.v4());
+        const fileContent = JSON.stringify({
+            ids: uuids
+        }, null, 2);
+
+        // Define the file name including execution start time (matching the expected format)
+        const fileName = `${startTime}`;
+
+        const params = {
+            Bucket: BUCKET_NAME,
+            Key: fileName,
+            Body: fileContent,
+            ContentType: 'application/json'
+        };
         console.log("params is ",params)
         await s3.putObject(params).promise();
         console.log(`File uploaded successfully: ${fileName}`);

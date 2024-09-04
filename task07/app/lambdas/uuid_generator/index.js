@@ -4,24 +4,26 @@ const s3 = new AWS.S3();
 const BUCKET_NAME = 'cmtr-bd1b882e-uuid-storage-test'; // Replace with your S3 bucket name
 
 exports.handler = async (event) => {
-    console.log("lambda event is ")
-    const startTime = new Date().toISOString().replace(/[:.]/g, '-'); // Format start time for filename
-
+    // Get current time in ISO format for filename
+    const startTime = new Date().toISOString();
+    
     // Generate 10 random UUIDs
     const uuids = Array.from({ length: 10 }, () => uuid.v4());
-
-    // Create file content
-    const fileContent = uuids.join('\n'); // Join UUIDs with newline for better readability
+    
+    // Create JSON content with UUIDs
+    const fileContent = JSON.stringify({
+        ids: uuids
+    }, null, 2); // Pretty print with indentation of 2 spaces
 
     // Define the file name including execution start time
-    const fileName = `uuids-${startTime}.txt`;
+    const fileName = `${startTime}.json`;
 
     // Parameters for S3 upload
     const params = {
         Bucket: BUCKET_NAME,
         Key: fileName,
         Body: fileContent,
-        ContentType: 'text/plain'
+        ContentType: 'application/json'
     };
 
     try {

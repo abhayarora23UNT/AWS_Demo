@@ -14,7 +14,11 @@
       "resource_type": "dynamodb_table"
   }
   ],
-  "event_sources": [],
+  "event_sources": [{
+    "target_table": "Configuration",
+    "resource_type": "dynamodb_trigger",
+    "batch_size": 10
+  }],
   "env_variables": {},
   "publish_version": true,
   "url_config": {},

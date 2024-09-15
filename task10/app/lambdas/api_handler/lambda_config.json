@@ -22,7 +22,20 @@
       "resource_type": "cognito_idp"
     }
   ],
-  "event_sources": [],
+  "event_sources": [
+    {
+      "CUPId": {
+        "resource_name": "simple-booking-userpool",
+        "resource_type": "cognito_idp",
+        "parameter": "id"
+      },
+      "CUPClientId": {
+        "resource_name": "simple-booking-userpool",
+        "resource_type": "cognito_idp",
+        "parameter": "client_id"
+      }
+    }
+  ],
   "env_variables": {},
   "publish_version": false,
   "url_config": {},

@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "name": "processor",
+  "func_name": "lambdas/processor/index.handler",
+  "resource_type": "lambda",
+  "iam_role_name": "processor-role",
+  "runtime": "nodejs20.x",
+  "memory": 128,
+  "timeout": 100,
+  "lambda_path": "lambdas/processor",
+  "dependencies": [
+    {
+      "resource_name": "Weather",
+      "resource_type": "dynamodb_table"
+    }
+  ],
+  "event_sources": [
+    {
+      "target_table": "Weather",
+      "resource_type": "dynamodb_trigger",
+      "batch_size": 10
+    }
+  ],
+  "env_variables": {},
+  "publish_version": false,
+  "tracing_mode":"Active",
+  "url_config": {
+      "auth_type": "NONE"
+  },
+  "ephemeral_storage": 512
+}

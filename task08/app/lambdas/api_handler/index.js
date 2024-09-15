@@ -1,4 +1,4 @@
-const { getWeather } = require('/opt/nodejs/weatherClient');  // '/opt/nodejs' is the path where Lambda layers are mounted
+const { getWeather } = require('/opt/nodejs/weather-client');  // '/opt/nodejs' is the path where Lambda layers are mounted
 exports.handler = async (event) => {
     console.log("api handler lambda event is ", event)
     const latitude = event.latitude

@@ -41,9 +41,9 @@
     ],
     "resources": {
       "/signup": {
-        "enable_cors": false,
+        "enable_cors": true,
         "POST": {
-          "authorization_type": "NONE",
+          "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -51,14 +51,13 @@
           "integration_request_body_template": {},
           "responses": [],
           "integration_responses": [],
-          "default_error_pattern": true,
-          "enable_proxy": true
+          "default_error_pattern": true
         }
       },
       "/signin": {
-        "enable_cors": false,
+        "enable_cors": true,
         "POST": {
-          "authorization_type": "NONE",
+          "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -66,14 +65,13 @@
           "integration_request_body_template": {},
           "responses": [],
           "integration_responses": [],
-          "default_error_pattern": true,
-          "enable_proxy": true
+          "default_error_pattern": true
         }
       },
       "/tables": {
-        "enable_cors": false,
+        "enable_cors": true,
         "GET": {
-          "authorization_type": "NONE",
+          "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -81,11 +79,10 @@
           "integration_request_body_template": {},
           "responses": [],
           "integration_responses": [],
-          "default_error_pattern": true,
-          "enable_proxy": true
+          "default_error_pattern": true
         },
         "POST": {
-          "authorization_type": "NONE",
+          "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -93,14 +90,13 @@
           "integration_request_body_template": {},
           "responses": [],
           "integration_responses": [],
-          "default_error_pattern": true,
-          "enable_proxy": true
+          "default_error_pattern": true
         }
       },
       "/reservations": {
-        "enable_cors": false,
+        "enable_cors": true,
         "GET": {
-          "authorization_type": "NONE",
+          "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -108,11 +104,10 @@
           "integration_request_body_template": {},
           "responses": [],
           "integration_responses": [],
-          "default_error_pattern": true,
-          "enable_proxy": true
+          "default_error_pattern": true
         },
         "POST": {
-          "authorization_type": "NONE",
+          "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -120,8 +115,7 @@
           "integration_request_body_template": {},
           "responses": [],
           "integration_responses": [],
-          "default_error_pattern": true,
-          "enable_proxy": true
+          "default_error_pattern": true
         }
       }
     },

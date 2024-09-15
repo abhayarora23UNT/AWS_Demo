@@ -1,31 +1,39 @@
 const AWS = require('aws-sdk');
-const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
-
 const userPoolId = process.env.CUPId;
 const clientId = process.env.CUPClientId;
 
-const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
+const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
 export const buildResponse = (statusCodeVal, messageVal) => ({
     statusCode: statusCodeVal,
     body: JSON.stringify({ statusCode: statusCodeVal, message: messageVal }),
 });
 async function performCognitoSignUp(event) {
-    const body = JSON.parse(event.body);
-    const params = {
-        AuthFlow: 'ADMIN_NO_SRP_AUTH',
-        ClientId: clientId,
-        UserPoolId, userPoolId,
-        AuthParameters: {
-            USERNAME: body.email,
-            PASSWORD: body.password
-        },
-        MessageAction: 'SUPPRESS'
-    };
     try {
-        const createUserData = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
-        console.log('User created successfully:', createUserData);
-        return buildResponse(200, 'User created successfully');
+        console.log("inside performCognitoSignUp")
+        const { firstName, lastName, email, password } = JSON.parse(event.body);
+        const params = {
+            ClientId: clientId,
+            UserPoolId, userPoolId,
+            Username: email,
+            UserAttributes: [
+                { Name: 'firstName', Value: firstName },
+                { Name: 'lastName', Value: lastName },
+                { Name: "email", Value: email, },
+            ],
+            TemporaryPassword: password,
+            MessageAction: 'SUPPRESS'
+        };
+        // Create the user
+        const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
+        console.log("adminCreateUser ", adminCreateUser)
+        // Admin confirm the user
+        const adminConfirmSignUp = await cognito.adminConfirmSignUp({
+            UserPoolId: userPoolId,
+            Username: email,
+        }).promise();
+        console.log("adminConfirmSignUp ", adminConfirmSignUp)
+        return buildResponse(200, 'User created and confirmed successfully');
     } catch (error) {
         console.error(error);
         return buildResponse(

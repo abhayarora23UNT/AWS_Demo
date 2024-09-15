@@ -1,8 +1,0 @@
-{
-  "name": "data-layer",
-  "resource_type": "lambda_layer",
-  "runtimes": [
-    "nodejs20.x"
-  ],
-  "deployment_package": "data-layer_layer.zip"
-}

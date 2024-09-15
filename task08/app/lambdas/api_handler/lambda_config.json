@@ -12,7 +12,9 @@
     "event_sources": [],
     "env_variables": {},
     "publish_version": false,
-    "url_config": {},
+    "url_config": {
+        "auth_type": "NONE"
+    },
     "ephemeral_storage": 512,
     "layers": [
         "data-layer"

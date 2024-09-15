@@ -82,11 +82,8 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
-        }
-      },
-      "/tables": {
-        "enable_cors": false,
+          "enable_proxy": true
+        },
         "POST": {
           "authorization_type": "NONE",
           "integration_type": "lambda",
@@ -112,11 +109,8 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
-        }
-      },
-      "/reservations": {
-        "enable_cors": false,
+          "enable_proxy": true
+        },
         "POST": {
           "authorization_type": "NONE",
           "integration_type": "lambda",

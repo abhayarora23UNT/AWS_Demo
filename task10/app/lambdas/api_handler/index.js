@@ -69,8 +69,8 @@ exports.handler = async (event) => {
     console.log("+++lambda event is ", event);
     const userPoolId = process.env.CUPId;
     console.log("+++userPoolId is ", userPoolId);
-    const httpMethod = event.requestContext.http.method
-    const httpPath = event.requestContext.http.path
+    const httpMethod = event.httpMethod
+    const httpPath = event.path
     if (httpMethod === 'POST' && httpPath === '/signup') {
         performCognitoSignUp(event,userPoolId)
     } else if (httpMethod === 'POST' && httpPath === '/signin') {

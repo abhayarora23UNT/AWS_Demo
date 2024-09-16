@@ -44,7 +44,7 @@
     ],
     "resources": {
       "/signup": {
-        "enable_cors": true,
+        "enable_cors": false,
         "POST": {
           "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
@@ -55,11 +55,11 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
+          "enable_proxy": true
         }
       },
       "/signin": {
-        "enable_cors": true,
+        "enable_cors": false,
         "POST": {
           "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
@@ -70,11 +70,11 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
+          "enable_proxy": true
         }
       },
       "/tables": {
-        "enable_cors": true,
+        "enable_cors": false,
         "GET": {
           "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
@@ -85,7 +85,7 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
+          "enable_proxy": true
         },
         "POST": {
           "authorization_type": "cog-authorizer",
@@ -97,11 +97,11 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
+          "enable_proxy": true
         }
       },
       "/reservations": {
-        "enable_cors": true,
+        "enable_cors": false,
         "GET": {
           "authorization_type": "cog-authorizer",
           "integration_type": "lambda",
@@ -112,7 +112,7 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
+          "enable_proxy": true
         },
         "POST": {
           "authorization_type": "cog-authorizer",
@@ -124,7 +124,7 @@
           "responses": [],
           "integration_responses": [],
           "default_error_pattern": true,
-          "enable_proxy":true
+          "enable_proxy": true
         }
       }
     },
@@ -170,6 +170,15 @@
     "sms_configuration": {},
     "username_attributes": [],
     "custom_attributes": [],
-    "client": {}
+    "client": {
+      "client_name": "client-app",
+      "generate_secret": false,
+      "explicit_auth_flows": [
+        "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+        "ALLOW_CUSTOM_AUTH",
+        "ALLOW_USER_SRP_AUTH",
+        "ALLOW_REFRESH_TOKEN_AUTH"
+      ]
+    }
   }
 }

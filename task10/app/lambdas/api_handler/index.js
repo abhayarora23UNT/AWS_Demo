@@ -9,7 +9,8 @@ const buildResponse = (statusCodeVal, messageVal) => ({
 });
 async function performCognitoSignUp(event,userPoolId) {
     try {
-        console.log("inside performCognitoSignUp")
+        console.log("inside performCognitoSignUp ",event)
+        console.log("userPoolId ",userPoolId)
         const { firstName, lastName, email, password } = JSON.parse(event.body);
         const params = {
            // ClientId: clientId,
@@ -23,6 +24,8 @@ async function performCognitoSignUp(event,userPoolId) {
             TemporaryPassword: password,
             MessageAction: 'SUPPRESS'
         };
+
+        console.log("inside adminCreateUser params ",params)
         // Create the user
         const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
         console.log("adminCreateUser ", adminCreateUser)

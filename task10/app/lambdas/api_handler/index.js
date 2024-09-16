@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const userPoolId = process.env.CUPId;
+
 //const clientId = process.env.CUPClientId;
 
 const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
@@ -8,7 +8,7 @@ export const buildResponse = (statusCodeVal, messageVal) => ({
     statusCode: statusCodeVal,
     body: JSON.stringify({ statusCode: statusCodeVal, message: messageVal }),
 });
-async function performCognitoSignUp(event) {
+async function performCognitoSignUp(event,userPoolId) {
     try {
         console.log("inside performCognitoSignUp")
         const { firstName, lastName, email, password } = JSON.parse(event.body);
@@ -42,7 +42,7 @@ async function performCognitoSignUp(event) {
         );
     }
 }
-async function performCognitoSignIn(event) {
+async function performCognitoSignIn(event,userPoolId) {
     const body = JSON.parse(event.body);
     const params = {
         AuthFlow: 'USER_PASSWORD_AUTH',
@@ -68,12 +68,14 @@ async function performCognitoSignIn(event) {
 }
 exports.handler = async (event) => {
     console.log("+++lambda event is ", event);
+    const userPoolId = process.env.CUPId;
+    console.log("+++userPoolId is ", userPoolId);
     const httpMethod = event.requestContext.http.method
     const httpPath = event.requestContext.http.path
     if (httpMethod === 'POST' && httpPath === '/signup') {
-        performCognitoSignUp(event)
+        performCognitoSignUp(event,userPoolId)
     } else if (httpMethod === 'POST' && httpPath === '/signin') {
-        performCognitoSignIn(event)
+        performCognitoSignIn(event,userPoolId)
     } else {
         return buildResponse(
             500,

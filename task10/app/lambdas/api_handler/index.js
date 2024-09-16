@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const userPoolId = process.env.CUPId;
-const clientId = process.env.CUPClientId;
+//const clientId = process.env.CUPClientId;
 
 const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
@@ -13,7 +13,7 @@ async function performCognitoSignUp(event) {
         console.log("inside performCognitoSignUp")
         const { firstName, lastName, email, password } = JSON.parse(event.body);
         const params = {
-            ClientId: clientId,
+           // ClientId: clientId,
             UserPoolId, userPoolId,
             Username: email,
             UserAttributes: [
@@ -46,7 +46,7 @@ async function performCognitoSignIn(event) {
     const body = JSON.parse(event.body);
     const params = {
         AuthFlow: 'USER_PASSWORD_AUTH',
-        ClientId: clientId,
+        //ClientId: clientId,
         UserPoolId, userPoolId,
         AuthParameters: {
             USERNAME: body.email,

@@ -8,7 +8,7 @@ class AuthenticationService {
     }
 
     initializeClientId = async () => {
-        console.log("poolId is ",poolId)
+        console.log("poolId is ", poolId)
         const params = { UserPoolId: poolId, MaxResults: 1 };
         const data = await this.cognitoIdentity.listUserPoolClients(params).promise();
         console.log("initializeClientId ", data)
@@ -22,7 +22,7 @@ class AuthenticationService {
     async signUp(event, userPoolId) {
         console.log("inside performCognitoSignUp ", event)
         console.log("userPoolId ", userPoolId)
-        const { email, password } = JSON.parse(event.body);
+        const { firstName, lastName, email, password } = JSON.parse(event.body);
         // const params = {
         //     // ClientId: clientId,
         //     UserPoolId: userPoolId,
@@ -43,11 +43,16 @@ class AuthenticationService {
             Username: email,
             Password: password,
             UserAttributes: [
-                { Name: 'email', Value: email }
-            ]
+                { Name: 'given_name', Value: firstName },
+                { Name: 'family_name', Value: lastName },
+                { Name: "email", Value: email, },
+                { Name: "email_verified", Value: 'true' },
+            ],
+            MessageAction: 'SUPPRESS'
         };
         try {
             console.log("signUp params ", params)
+            console.log("cognitoIdentity obj ", this.cognitoIdentity)
             const signUpPromise = await this.cognitoIdentity.signUp(params).promise();
             console.log("signUpPromise ", signUpPromise)
             const confirmParams = {

@@ -44,7 +44,7 @@
     ],
     "resources": {
       "/signup": {
-        "enable_cors": false,
+        "enable_cors": true,
         "POST": {
           "authorization_type": "NONE",
           "integration_type": "lambda",
@@ -59,7 +59,7 @@
         }
       },
       "/signin": {
-        "enable_cors": false,
+        "enable_cors": true,
         "POST": {
           "authorization_type": "NONE",
           "integration_type": "lambda",
@@ -74,9 +74,9 @@
         }
       },
       "/tables": {
-        "enable_cors": false,
+        "enable_cors": true,
         "GET": {
-          "authorization_type": "cog-authorizer",
+          "authorization_type": "authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -88,7 +88,7 @@
           "enable_proxy": true
         },
         "POST": {
-          "authorization_type": "cog-authorizer",
+          "authorization_type": "authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -101,9 +101,9 @@
         }
       },
       "/reservations": {
-        "enable_cors": false,
+        "enable_cors": true,
         "GET": {
-          "authorization_type": "cog-authorizer",
+          "authorization_type": "authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -115,7 +115,7 @@
           "enable_proxy": true
         },
         "POST": {
-          "authorization_type": "cog-authorizer",
+          "authorization_type": "authorizer",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -129,7 +129,7 @@
       }
     },
     "authorizers": {
-      "cog-authorizer": {
+      "authorizer": {
         "type": "COGNITO_USER_POOLS",
         "identity_source": "method.request.header.Authorization",
         "ttl": 300,

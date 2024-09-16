@@ -46,7 +46,7 @@
       "/signup": {
         "enable_cors": false,
         "POST": {
-          "authorization_type": "cog-authorizer",
+          "authorization_type": "NONE",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,
@@ -61,7 +61,7 @@
       "/signin": {
         "enable_cors": false,
         "POST": {
-          "authorization_type": "cog-authorizer",
+          "authorization_type": "NONE",
           "integration_type": "lambda",
           "lambda_name": "api_handler",
           "api_key_required": false,

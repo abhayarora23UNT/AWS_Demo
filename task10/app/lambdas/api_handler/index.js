@@ -1,10 +1,9 @@
 const AWS = require('aws-sdk');
-
 //const clientId = process.env.CUPClientId;
 
 const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
-export const buildResponse = (statusCodeVal, messageVal) => ({
+const buildResponse = (statusCodeVal, messageVal) => ({
     statusCode: statusCodeVal,
     body: JSON.stringify({ statusCode: statusCodeVal, message: messageVal }),
 });

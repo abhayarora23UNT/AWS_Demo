@@ -14,7 +14,7 @@ async function performCognitoSignUp(event, userPoolId) {
         const { firstName, lastName, email, password } = JSON.parse(event.body);
         const params = {
             // ClientId: clientId,
-            UserPoolId, userPoolId,
+            UserPoolId: userPoolId,
             Username: email,
             UserAttributes: [
                 { Name: 'firstName', Value: firstName },
@@ -49,7 +49,7 @@ async function performCognitoSignIn(event, userPoolId) {
     const params = {
         AuthFlow: 'USER_PASSWORD_AUTH',
         //ClientId: clientId,
-        UserPoolId, userPoolId,
+        UserPoolId: userPoolId,
         AuthParameters: {
             USERNAME: body.email,
             PASSWORD: body.password

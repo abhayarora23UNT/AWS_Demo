@@ -21,7 +21,9 @@
             "cognito-idp:AdminConfirmSignUp",
             "cognito-idp:GetIdentityProviderByIdentifier",
             "cognito-idp:ListUserPoolClients",
-            "cognito-idp:AdminRespondToAuthChallenge"
+            "cognito-idp:AdminRespondToAuthChallenge",
+            "xray:PutTraceSegments",
+            "xray:PutTelemetryRecords"
           ],
           "Effect": "Allow",
           "Resource": "*"

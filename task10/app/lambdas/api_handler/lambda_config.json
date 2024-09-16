@@ -36,6 +36,7 @@
     }
   },
   "publish_version": false,
+  "tracing_mode":"Active",
   "url_config": {},
   "ephemeral_storage": 512
 }

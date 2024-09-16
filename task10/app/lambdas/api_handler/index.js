@@ -1,3 +1,6 @@
+const { AuthenticationService } = require("./cognito_service");
+const authService = new AuthenticationService();
+
 const AWS = require('aws-sdk');
 //const clientId = process.env.CUPClientId;
 
@@ -9,36 +12,19 @@ const buildResponse = (statusCodeVal, messageVal) => ({
 });
 async function performCognitoSignUp(event, userPoolId) {
     try {
-        console.log("inside performCognitoSignUp ", event)
-        console.log("userPoolId ", userPoolId)
-        const { firstName, lastName, email, password } = JSON.parse(event.body);
-        const params = {
-            // ClientId: clientId,
-            UserPoolId: userPoolId,
-            Username: email,
-            UserAttributes: [
-                { Name: 'given_name', Value: firstName },
-                { Name: 'family_name', Value: lastName },
-                { Name: "email", Value: email, },
-                { Name: "email_verified", Value: 'true' },
-            ],
-            TemporaryPassword: password,
-            MessageAction: 'SUPPRESS',
-            DesiredDeliveryMediums: ['EMAIL'],
-            ForceAliasCreation: false
-        };
-
-        console.log("adminCreateUser params ", params)
-        // Create the user
-        const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
-        console.log("adminCreateUser ", adminCreateUser)
-        // Admin confirm the user
-        const adminConfirmSignUp = await cognito.adminConfirmSignUp({
-            UserPoolId: userPoolId,
-            Username: email,
-        }).promise();
-        console.log("adminConfirmSignUp ", adminConfirmSignUp)
-        return buildResponse(200, 'User created and confirmed successfully');
+        const signUpPromise = await authService.signUp(event, userPoolId);
+        console.log("signUpPromise ", signUpPromise)
+        return buildResponse(200, 'User created and confirmed successfully')
+        // // Create the user
+        // const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
+        // console.log("adminCreateUser ", adminCreateUser)
+        // // Admin confirm the user
+        // const adminConfirmSignUp = await cognito.adminConfirmSignUp({
+        //     UserPoolId: userPoolId,
+        //     Username: email,
+        // }).promise();
+        // console.log("adminConfirmSignUp ", adminConfirmSignUp)
+        // return buildResponse(200, 'User created and confirmed successfully');
     } catch (error) {
         console.error(error);
         return buildResponse(
@@ -77,8 +63,9 @@ exports.handler = async (event) => {
     console.log("+++userPoolId is ", userPoolId);
     const httpMethod = event.httpMethod
     const httpPath = event.path
-
     try {
+        const initializeClientIdPromise = await authService.initializeClientId();
+        console.log("initializeClientIdPromise ", initializeClientIdPromise)
         console.log("httpMethod ", httpMethod)
         console.log("httpPath ", httpPath)
         if (httpMethod === 'POST' && httpPath === '/signup') {

@@ -47,7 +47,6 @@ class AuthenticationService {
                 { Name: 'given_name', Value: firstName },
                 { Name: 'family_name', Value: lastName },
                 { Name: "email", Value: email, },
-                { Name: "email_verified", Value: 'true' },
             ],
             //MessageAction: 'SUPPRESS'
         };

@@ -7,13 +7,13 @@ const buildResponse = (statusCodeVal, messageVal) => ({
     statusCode: statusCodeVal,
     body: JSON.stringify({ statusCode: statusCodeVal, message: messageVal }),
 });
-async function performCognitoSignUp(event,userPoolId) {
+async function performCognitoSignUp(event, userPoolId) {
     try {
-        console.log("inside performCognitoSignUp ",event)
-        console.log("userPoolId ",userPoolId)
+        console.log("inside performCognitoSignUp ", event)
+        console.log("userPoolId ", userPoolId)
         const { firstName, lastName, email, password } = JSON.parse(event.body);
         const params = {
-           // ClientId: clientId,
+            // ClientId: clientId,
             UserPoolId, userPoolId,
             Username: email,
             UserAttributes: [
@@ -25,7 +25,7 @@ async function performCognitoSignUp(event,userPoolId) {
             MessageAction: 'SUPPRESS'
         };
 
-        console.log("inside adminCreateUser params ",params)
+        console.log("inside adminCreateUser params ", params)
         // Create the user
         const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
         console.log("adminCreateUser ", adminCreateUser)
@@ -44,7 +44,7 @@ async function performCognitoSignUp(event,userPoolId) {
         );
     }
 }
-async function performCognitoSignIn(event,userPoolId) {
+async function performCognitoSignIn(event, userPoolId) {
     const body = JSON.parse(event.body);
     const params = {
         AuthFlow: 'USER_PASSWORD_AUTH',
@@ -74,14 +74,27 @@ exports.handler = async (event) => {
     console.log("+++userPoolId is ", userPoolId);
     const httpMethod = event.httpMethod
     const httpPath = event.path
-    if (httpMethod === 'POST' && httpPath === '/signup') {
-        performCognitoSignUp(event,userPoolId)
-    } else if (httpMethod === 'POST' && httpPath === '/signin') {
-        performCognitoSignIn(event,userPoolId)
-    } else {
+
+    try {
+        console.log("httpMethod ", httpMethod)
+        console.log("httpPath ", httpPath)
+        if (httpMethod === 'POST' && httpPath === '/signup') {
+            performCognitoSignUp(event, userPoolId)
+        } else if (httpMethod === 'POST' && httpPath === '/signin') {
+            performCognitoSignIn(event, userPoolId)
+        } else {
+            return buildResponse(
+                400,
+                `Bad Request. Request path: ${httpPath}. HTTP method: ${httpMethod}`
+            );
+        }
+    }
+    catch (error) {
+        console.log("lambda error ", error)
         return buildResponse(
             500,
-            `Internal Server Error. Request path: ${httpPath}. HTTP method: ${httpMethod}`
+            `Internal Server Error. Request path: ${httpPath}. HTTP method: ${httpMethod} Error : ${error}`
         );
     }
+
 };

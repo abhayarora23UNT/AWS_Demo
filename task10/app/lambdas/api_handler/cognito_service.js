@@ -53,16 +53,24 @@ class AuthenticationService {
         try {
             console.log("signUp params ", params)
             console.log("cognitoIdentity obj ", this.cognitoIdentity)
-            const signUpPromise = await this.cognitoIdentity.signUp(params).promise();
-            console.log("signUpPromise ", signUpPromise)
-            const confirmParams = {
-                Username: username,
-                UserPoolId: poolId
-            };
-            console.log("confirmParams ", confirmParams)
-            const confirmedResult = await this.cognitoIdentity.adminConfirmSignUp(confirmParams).promise();
-            console.log("confirmedResult ", confirmedResult)
-            return { signUpResult: confirmedResult };
+           // const signUpPromise = await this.cognitoIdentity.signUp(params).promise();
+            this.cognitoIdentity.signUp(params, (err, data) => {
+                if (err) {
+                    console.error('Error during sign-up:', err);
+                    return err;
+                } else {
+                    console.log('Sign-up successful:', data);
+                    return data;
+                }
+            });
+            // const confirmParams = {
+            //     Username: username,
+            //     UserPoolId: poolId
+            // };
+            // console.log("confirmParams ", confirmParams)
+            // const confirmedResult = await this.cognitoIdentity.adminConfirmSignUp(confirmParams).promise();
+            // console.log("confirmedResult ", confirmedResult)
+            // return { signUpResult: confirmedResult };
         }
         catch (error) {
             console.log(`Failed to sign up: ${error}`);

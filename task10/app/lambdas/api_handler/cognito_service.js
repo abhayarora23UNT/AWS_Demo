@@ -55,6 +55,8 @@ class AuthenticationService {
             console.log("cognitoIdentity obj ", this.cognitoIdentity)
            // const signUpPromise = await this.cognitoIdentity.signUp(params).promise();
             this.cognitoIdentity.signUp(params, (err, data) => {
+                console.log("inside signUp err: ", err)
+                console.log("inside signUp data: ", data)
                 if (err) {
                     console.error('Error during sign-up:', err);
                     return err;

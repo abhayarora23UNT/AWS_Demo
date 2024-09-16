@@ -12,8 +12,8 @@ const buildResponse = (statusCodeVal, messageVal) => ({
 });
 async function performCognitoSignUp(event, userPoolId) {
     try {
-        const signUpPromise = await authService.signUp(event, userPoolId);
-        console.log("signUpPromise ", signUpPromise)
+        const performCognitoSignUpPromise = await authService.signUp(event, userPoolId);
+        console.log("performCognitoSignUpPromise ", performCognitoSignUpPromise)
         return buildResponse(200, 'User created and confirmed successfully')
         // // Create the user
         // const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();

@@ -18,6 +18,7 @@
             "cognito-idp:GetUser",
             "cognito-idp:AdminCreateUser",
             "cognito-idp:AdminInitiateAuth",
+            "cognito-idp:SignUp",
             "cognito-idp:AdminConfirmSignUp",
             "cognito-idp:GetIdentityProviderByIdentifier",
             "cognito-idp:ListUserPools",

@@ -10,6 +10,7 @@ class AuthenticationService {
     initializeClientId = async () => {
         console.log("poolId is ", poolId)
         const params = { UserPoolId: poolId, MaxResults: 1 };
+        console.log("initializeClientId cognitoIdentity obj ", this.cognitoIdentity)
         const data = await this.cognitoIdentity.listUserPoolClients(params).promise();
         console.log("initializeClientId ", data)
         if (data.UserPoolClients && data.UserPoolClients.length > 0) {
@@ -48,7 +49,7 @@ class AuthenticationService {
                 { Name: "email", Value: email, },
                 { Name: "email_verified", Value: 'true' },
             ],
-            MessageAction: 'SUPPRESS'
+            //MessageAction: 'SUPPRESS'
         };
         try {
             console.log("signUp params ", params)

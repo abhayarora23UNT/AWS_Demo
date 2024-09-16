@@ -17,15 +17,18 @@ async function performCognitoSignUp(event, userPoolId) {
             UserPoolId: userPoolId,
             Username: email,
             UserAttributes: [
-                { Name: 'firstName', Value: firstName },
-                { Name: 'lastName', Value: lastName },
+                { Name: 'given_name', Value: firstName },
+                { Name: 'family_name', Value: lastName },
                 { Name: "email", Value: email, },
+                { Name: "email_verified", Value: true, },
             ],
             TemporaryPassword: password,
-            MessageAction: 'SUPPRESS'
+            MessageAction: 'SUPPRESS',
+            DesiredDeliveryMediums: ['EMAIL'],
+            ForceAliasCreation: false
         };
 
-        console.log("inside adminCreateUser params ", params)
+        console.log("adminCreateUser params ", params)
         // Create the user
         const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
         console.log("adminCreateUser ", adminCreateUser)

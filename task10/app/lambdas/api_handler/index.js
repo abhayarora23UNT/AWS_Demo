@@ -20,7 +20,7 @@ async function performCognitoSignUp(event, userPoolId) {
                 { Name: 'given_name', Value: firstName },
                 { Name: 'family_name', Value: lastName },
                 { Name: "email", Value: email, },
-                { Name: "email_verified", Value: true, },
+                { Name: "email_verified", Value: 'true' },
             ],
             TemporaryPassword: password,
             MessageAction: 'SUPPRESS',
@@ -43,7 +43,7 @@ async function performCognitoSignUp(event, userPoolId) {
         console.error(error);
         return buildResponse(
             400,
-            `Bad request syntax or unsupported method. Request path: ${httpPath}. HTTP method: ${httpMethod}`
+            `Bad request syntax or unsupported method ,error: ${error}`
         );
     }
 }
@@ -67,7 +67,7 @@ async function performCognitoSignIn(event, userPoolId) {
         console.error(error);
         return buildResponse(
             400,
-            `Bad request syntax or unsupported method. Request path: ${httpPath}. HTTP method: ${httpMethod}`
+            `Bad request syntax or unsupported method ,error: ${error}`
         );
     }
 }

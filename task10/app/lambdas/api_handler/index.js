@@ -162,8 +162,16 @@ async function postTables(event, userPoolId) {
         console.log("db param ", params)
         await dynamodb.put(params).promise();
         console.log('Data inserted successfully');
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ "id": id }),
+        }
     } catch (error) {
-        console.error('Error inserting data into DynamoDB:', error);
+        console.error('Error inserting data into DynamoDB Tables:', error);
+        return buildResponse(
+            400,
+            `Bad request syntax or unsupported method ,error: ${error}`
+        );
         throw error;
     }
 }

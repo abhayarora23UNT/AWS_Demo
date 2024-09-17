@@ -365,7 +365,10 @@ async function checkTableNumberExists(tableNumber) {
     const params = {
         TableName: tablesDynamo,
         IndexName: tableNumberIndex, // The GSI name
-        KeyConditionExpression: 'number = :tableNumber',
+        KeyConditionExpression: '#number = :tableNumber',
+        ExpressionAttributeNames: {
+            '#number': 'number' // Placeholder for reserved keyword
+        },
         ExpressionAttributeValues: {
             ':tableNumber': tableNumber
         }

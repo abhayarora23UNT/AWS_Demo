@@ -6,6 +6,8 @@ const uuid = require('uuid');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 //const clientId = process.env.CUPClientId;
 
+let tablesDynamo='cmtr-bd1b882e-Tables-test'
+let reservationDynamo='cmtr-bd1b882e-Reservations-test';
 const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
 const buildResponse = (statusCodeVal, messageVal) => ({
@@ -137,10 +139,8 @@ async function performCognitoSignIn(event, userPoolId) {
 async function getTables(event, userPoolId) {
     console.log("getTables event", event)
     console.log("getTables userPoolId", userPoolId)
-    const tableName = 'cmtr-bd1b882e-Tables-test';
-    // const tableName = 'cmtr-bd1b882e-Tables';
     const params = {
-        TableName: tableName,
+        TableName: tablesDynamo,
     };
     let scanResults = [];
     let lastEvaluatedKey = null;
@@ -174,10 +174,8 @@ async function getTablesById(event, userPoolId) {
     const queryId = event.pathParameters.tableId
     console.log("queryId in param is ", queryId)
 
-    const tableName = 'cmtr-bd1b882e-Tables-test';
-    // const tableName = 'cmtr-bd1b882e-Tables';
     const params = {
-        TableName: tableName,
+        TableName: tablesDynamo,
         KeyConditionExpression: 'id = :partitionKeyValue',
         ExpressionAttributeValues: {
             ':partitionKeyValue': queryId
@@ -212,8 +210,6 @@ async function getTablesById(event, userPoolId) {
 async function postTables(event, userPoolId) {
     console.log("postTables event", event)
     console.log("postTables userPoolId", userPoolId)
-    // const tableName = 'cmtr-bd1b882e-Tables';
-    const tableName = 'cmtr-bd1b882e-Tables-test';
     const { id, number, places, isVip, minOrder } = JSON.parse(event.body)
     const itemData = {
         "id": id,
@@ -223,7 +219,7 @@ async function postTables(event, userPoolId) {
         "minOrder": minOrder
     }
     const params = {
-        TableName: tableName,
+        TableName: tablesDynamo,
         Item: itemData
     };
     try {
@@ -246,10 +242,8 @@ async function postTables(event, userPoolId) {
 async function getReservations(event, userPoolId) {
     console.log("getReservations event", event)
     console.log("getReservations userPoolId", userPoolId)
-    const tableName = 'cmtr-bd1b882e-Reservations-test';
-    //const tableName = 'cmtr-bd1b882e-Reservations';
     const params = {
-        TableName: tableName,
+        TableName: reservationDynamo,
     };
     let scanResults = [];
     let lastEvaluatedKey = null;
@@ -280,8 +274,6 @@ async function getReservations(event, userPoolId) {
 async function postReservations(event, userPoolId) {
     console.log("postReservations event", event)
     console.log("postReservations userPoolId", userPoolId)
-    const tableName = 'cmtr-bd1b882e-Reservations-test';
-    //const tableName = 'cmtr-bd1b882e-Reservations';
     const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
     const uniqueId = uuid.v4();
     const itemData = {
@@ -294,7 +286,7 @@ async function postReservations(event, userPoolId) {
         "slotTimeEnd": slotTimeEnd
     }
     const params = {
-        TableName: tableName,
+        TableName: reservationDynamo,
         Item: itemData
     };
     try {
@@ -313,6 +305,15 @@ async function postReservations(event, userPoolId) {
         );
     }
 }
+
+function initializeTableNames(env = 'default') {
+    if (env == 'local') {
+        tablesDynamo = 'cmtr-bd1b882e-Tables'
+        reservationDynamo = 'cmtr-bd1b882e-Reservations';
+    }
+    console.log("Table 1 ", tablesDynamo)
+    console.log("Table 2 ", reservationDynamo)
+}
 exports.handler = async (event) => {
     console.log("+++lambda event is ", event);
     const userPoolId = process.env.CUPId;
@@ -322,6 +323,7 @@ exports.handler = async (event) => {
     const tablesPattern = /^\/tables$/;
     const tablesWithIdPattern = /^\/tables\/(\d+)$/;
     try {
+        initializeTableNames('local') // for local testing
         console.log("httpMethod ", httpMethod)
         console.log("httpPath ", httpPath)
         if (httpMethod === 'POST' && httpPath === '/signup') {

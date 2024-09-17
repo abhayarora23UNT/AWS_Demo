@@ -144,8 +144,8 @@ async function getTables(event, userPoolId) {
 async function postTables(event, userPoolId) {
     console.log("postTables event", event)
     console.log("postTables userPoolId", userPoolId)
-    const tableName = 'cmtr-bd1b882e-Tables';
-    //const tableName = 'cmtr-bd1b882e-Tables-test';
+    //const tableName = 'cmtr-bd1b882e-Tables';
+    const tableName = 'cmtr-bd1b882e-Tables-test';
     const { id, number, places, isVip, minOrder } = JSON.parse(event.body)
     const itemData = {
         "id": id,

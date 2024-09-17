@@ -2,6 +2,7 @@ const { AuthenticationService } = require("./cognito_service");
 const authService = new AuthenticationService();
 
 const AWS = require('aws-sdk');
+const uuid = require('uuid');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 //const clientId = process.env.CUPClientId;
 
@@ -136,16 +137,85 @@ async function performCognitoSignIn(event, userPoolId) {
 async function getTables(event, userPoolId) {
     console.log("getTables event", event)
     console.log("getTables userPoolId", userPoolId)
+    //const tableName = 'cmtr-bd1b882e-Tables-test';
+    const tableName = 'cmtr-bd1b882e-Tables';
+    const params = {
+        TableName: tableName,
+    };
+    let scanResults = [];
+    let lastEvaluatedKey = null;
+    try {
+        do {
+            if (lastEvaluatedKey) {
+                params.ExclusiveStartKey = lastEvaluatedKey;
+            }
+            const data = await dynamodb.scan(params).promise();
+            scanResults.push(...data.Items);
+            lastEvaluatedKey = data.LastEvaluatedKey;
+        } while (lastEvaluatedKey);
+
+        console.log("Scan succeeded:", scanResults);
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ "tables": scanResults }),
+        }
+    } catch (err) {
+        console.error("Error scanning table:", err);
+        return buildResponse(
+            400,
+            `Bad request syntax or unsupported method ,error: ${error}`
+        );
+    }
+}
+
+async function getTablesById(event, userPoolId) {
+    console.log("getTables event", event)
+    console.log("getTables userPoolId", userPoolId)
     const queryStringParameters = event.queryStringParameters || {};
-    console.log("queryStringParameters ",queryStringParameters)
-    const tableId = queryStringParameters.tableId; 
+    console.log("queryStringParameters ", queryStringParameters)
+    const queryId = event.pathParameters.tableId
+    console.log("queryId in param is ", queryId)
+
+    //const tableName = 'cmtr-bd1b882e-Tables-test';
+    const tableName = 'cmtr-bd1b882e-Tables';
+    const params = {
+        TableName: tableName,
+        KeyConditionExpression: 'id = :partitionKeyValue',
+        ExpressionAttributeValues: {
+            ':partitionKeyValue': queryId
+        }
+    };
+    try {
+        let queryResults = [];
+        let lastEvaluatedKey = null;
+        do {
+            if (lastEvaluatedKey) {
+                params.ExclusiveStartKey = lastEvaluatedKey;
+            }
+            const data = await dynamodb.query(params).promise();
+            queryResults.push(...data.Items);
+            lastEvaluatedKey = data.LastEvaluatedKey;
+        } while (lastEvaluatedKey);
+
+        console.log("Query Results:", queryResults);
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ queryResults }),
+        }
+    } catch (err) {
+        console.error("Error Querying table:", err);
+        return buildResponse(
+            400,
+            `Bad request syntax or unsupported method ,error: ${error}`
+        );
+    }
 }
 
 async function postTables(event, userPoolId) {
     console.log("postTables event", event)
     console.log("postTables userPoolId", userPoolId)
-    //const tableName = 'cmtr-bd1b882e-Tables';
-    const tableName = 'cmtr-bd1b882e-Tables-test';
+    const tableName = 'cmtr-bd1b882e-Tables';
+    //const tableName = 'cmtr-bd1b882e-Tables-test';
     const { id, number, places, isVip, minOrder } = JSON.parse(event.body)
     const itemData = {
         "id": id,
@@ -172,18 +242,69 @@ async function postTables(event, userPoolId) {
             400,
             `Bad request syntax or unsupported method ,error: ${error}`
         );
-        throw error;
     }
 }
 
 async function getReservations(event, userPoolId) {
     console.log("getReservations event", event)
     console.log("getReservations userPoolId", userPoolId)
+    //const tableName = 'cmtr-bd1b882e-Reservations-test';
+    const tableName = 'cmtr-bd1b882e-Reservations';
+    const params = {
+        TableName: tableName,
+    };
+    try {
+        const data = await dynamodb.send(new ScanCommand(params));
+        const tableRecords = data.Items;
+        console.log("Scan succeeded:", tableRecords);
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ "reservations": tableRecords }),
+        }
+    } catch (err) {
+        console.error("Error scanning table:", err);
+        return buildResponse(
+            400,
+            `Bad request syntax or unsupported method ,error: ${error}`
+        );
+    }
 }
 
 async function postReservations(event, userPoolId) {
     console.log("postReservations event", event)
     console.log("postReservations userPoolId", userPoolId)
+    //const tableName = 'cmtr-bd1b882e-Reservations-test';
+    const tableName = 'cmtr-bd1b882e-Reservations';
+    const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
+    const uniqueId = uuid.v4();
+    const itemData = {
+        id: uuid.v4(), // Generate a unique ID
+        "tableNumber": tableNumber,
+        "clientName": clientName,
+        "phoneNumber": phoneNumber,
+        "date": date,
+        "slotTimeStart": slotTimeStart,
+        "slotTimeEnd": slotTimeEnd
+    }
+    const params = {
+        TableName: tableName,
+        Item: itemData
+    };
+    try {
+        console.log("db param ", params)
+        await dynamodb.put(params).promise();
+        console.log('Data inserted successfully');
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ "reservationId": uniqueId }),
+        }
+    } catch (error) {
+        console.error('Error inserting data into DynamoDB Tables:', error);
+        return buildResponse(
+            400,
+            `Bad request syntax or unsupported method ,error: ${error}`
+        );
+    }
 }
 exports.handler = async (event) => {
     console.log("+++lambda event is ", event);
@@ -203,22 +324,29 @@ exports.handler = async (event) => {
             console.log("+++signInResult is ", signInResult);
             return signInResult
         } else if (httpMethod === 'GET' && httpPath === '/tables') {
-            const getTablesResult = await getTables(event, userPoolId)
-            console.log("+++getTablesResult is ", getTablesResult);
-            return getTablesResult
-        }else if (httpMethod === 'POST' && httpPath === '/tables') {
+            const queryId = event.pathParameters.tableId;
+            if (queryId) {
+                const getTablesByIdResult = await getTablesById(event, userPoolId)
+                console.log("+++getTablesByIdResult is ", getTablesByIdResult);
+                return getTablesByIdResult
+            } else {
+                const getTablesResult = await getTables(event, userPoolId)
+                console.log("+++getTablesResult is ", getTablesResult);
+                return getTablesResult
+            }
+        } else if (httpMethod === 'POST' && httpPath === '/tables') {
             const postTableResult = await postTables(event, userPoolId)
             console.log("+++postTableResult is ", postTableResult);
             return postTableResult
-        }else if (httpMethod === 'GET' && httpPath === '/reservations') {
+        } else if (httpMethod === 'GET' && httpPath === '/reservations') {
             const getReservationsResult = await getReservations(event, userPoolId)
             console.log("+++getReservationsResult is ", getReservationsResult);
             return getReservationsResult
-        }else if (httpMethod === 'POST' && httpPath === '/reservations') {
+        } else if (httpMethod === 'POST' && httpPath === '/reservations') {
             const postReservationsResult = await postReservations(event, userPoolId)
             console.log("+++postReservationsResult is ", postReservationsResult);
             return postReservationsResult
-        }else {
+        } else {
             return buildResponse(
                 400,
                 `Bad Request. Request path: ${httpPath}. HTTP method: ${httpMethod}`

@@ -389,7 +389,7 @@ exports.handler = async (event) => {
     const tablesPattern = /^\/tables$/;
     const tablesWithIdPattern = /^\/tables\/(\d+)$/;
     try {
-        initializeTableNames('local') // for local testing
+        //initializeTableNames('local') // for local testing
         console.log("httpMethod ", httpMethod)
         console.log("httpPath ", httpPath)
         if (httpMethod === 'POST' && httpPath === '/signup') {

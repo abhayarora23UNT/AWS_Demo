@@ -173,12 +173,12 @@ async function getTablesById(event, userPoolId) {
     console.log("getTablesById userPoolId", userPoolId)
     const queryId = event.pathParameters.tableId
     console.log("queryId in param is ", queryId)
-
+    const partitionKeyValue = Number(queryId);
     const params = {
         TableName: tablesDynamo,
         KeyConditionExpression: 'id = :partitionKeyValue',
         ExpressionAttributeValues: {
-            ':partitionKeyValue': queryId
+            ':partitionKeyValue': partitionKeyValue
         }
     };
     try {

@@ -18,12 +18,9 @@ const buildResponse = (statusCodeVal, messageVal) => ({
 async function performCognitoSignUp(event, userPoolId) {
     try {
         const params = { UserPoolId: userPoolId, MaxResults: 1 };
-        console.log("initializeClientId cognitoIdentity obj ", cognitoIdentityServiceProvider)
 
         //----------------- Generate Client Id -----------------//
-
         const data = await cognitoIdentityServiceProvider.listUserPoolClients(params).promise();
-        console.log("initializeClientId ", data)
         let clientId = "";
         if (data.UserPoolClients && data.UserPoolClients.length > 0) {
             clientId = data.UserPoolClients[0].ClientId;
@@ -81,13 +78,6 @@ async function performCognitoSignUp(event, userPoolId) {
         console.log("adminRespondToAuthChallengeParam ", adminRespondToAuthChallengeParam)
         const adminRespondToAuthChallengePromise = await cognitoIdentityServiceProvider.adminRespondToAuthChallenge(adminRespondToAuthChallengeParam).promise();
         console.log("adminRespondToAuthChallengePromise ", adminRespondToAuthChallengePromise)
-
-        //----------------- Generate adminConfirmSignUp -----------------//
-        // const adminConfirmSignUpPromise = await cognitoIdentityServiceProvider.adminConfirmSignUp({
-        //     UserPoolId: userPoolId,
-        //     Username: email,
-        // }).promise();
-        // console.log("adminConfirmSignUpPromise ", adminConfirmSignUpPromise)
         return buildResponse(200, 'User has been successfully signed up')
     } catch (error) {
         console.error("performCognitoSignUp " + error);
@@ -101,9 +91,7 @@ async function performCognitoSignIn(event, userPoolId) {
     try {
         const { email, password } = JSON.parse(event.body);
         const params = { UserPoolId: userPoolId, MaxResults: 1 };
-        console.log("initializeClientId cognitoIdentity obj ", cognitoIdentityServiceProvider)
         const data = await cognitoIdentityServiceProvider.listUserPoolClients(params).promise();
-        console.log("initializeClientId ", data)
         let clientId = "";
         if (data.UserPoolClients && data.UserPoolClients.length > 0) {
             clientId = data.UserPoolClients[0].ClientId;
@@ -139,7 +127,6 @@ async function performCognitoSignIn(event, userPoolId) {
 
 async function getTables(event, userPoolId) {
     console.log("getTables event", event)
-    console.log("getTables userPoolId", userPoolId)
     const params = {
         TableName: tablesDynamo,
     };
@@ -155,7 +142,7 @@ async function getTables(event, userPoolId) {
             lastEvaluatedKey = data.LastEvaluatedKey;
         } while (lastEvaluatedKey);
 
-        console.log("Scan succeeded:", scanResults);
+        console.log("getTables Scan succeeded:", scanResults);
         return {
             statusCode: 200,
             body: JSON.stringify({ "tables": scanResults }),
@@ -171,7 +158,6 @@ async function getTables(event, userPoolId) {
 
 async function getTablesById(event, userPoolId) {
     console.log("getTablesById event", event)
-    console.log("getTablesById userPoolId", userPoolId)
     const queryId = event.pathParameters.tableId
     console.log("queryId in param is ", queryId)
     const partitionKeyValue = Number(queryId);
@@ -183,7 +169,7 @@ async function getTablesById(event, userPoolId) {
     };
     try {
         const data = await dynamodb.get(params).promise();
-        console.log("Query Result:", data.Item);
+        console.log("getTablesById Query Result:", data.Item);
         if (data.Item) {
             return {
                 statusCode: 200,
@@ -206,7 +192,6 @@ async function getTablesById(event, userPoolId) {
 
 async function postTables(event, userPoolId) {
     console.log("postTables event", event)
-    console.log("postTables userPoolId", userPoolId)
     const { id, number, places, isVip, minOrder } = JSON.parse(event.body)
     const itemData = {
         "id": id,
@@ -220,9 +205,9 @@ async function postTables(event, userPoolId) {
         Item: itemData
     };
     try {
-        console.log("db param ", params)
+        console.log("postTables param ", params)
         await dynamodb.put(params).promise();
-        console.log('Data inserted successfully');
+        console.log('Data inserted successfully in table Tables');
         return {
             statusCode: 200,
             body: JSON.stringify({ "id": id }),
@@ -238,7 +223,6 @@ async function postTables(event, userPoolId) {
 
 async function getReservations(event, userPoolId) {
     console.log("getReservations event", event)
-    console.log("getReservations userPoolId", userPoolId)
     const params = {
         TableName: reservationDynamo,
     };
@@ -254,7 +238,7 @@ async function getReservations(event, userPoolId) {
             lastEvaluatedKey = data.LastEvaluatedKey;
         } while (lastEvaluatedKey);
 
-        console.log("Scan succeeded:", scanResults);
+        console.log("getReservations Scan succeeded:", scanResults);
         return {
             statusCode: 200,
             body: JSON.stringify({ "reservations": scanResults }),
@@ -270,8 +254,6 @@ async function getReservations(event, userPoolId) {
 
 async function postReservations(event, userPoolId) {
     console.log("postReservations event", event)
-    console.log("postReservations userPoolId", userPoolId)
-    
     
     const tableExists = await checkTableExists(reservationDynamo);
     console.log("is table exists ", tableExists)
@@ -313,7 +295,7 @@ async function postReservations(event, userPoolId) {
     try {
         console.log("db param ", params)
         await dynamodb.put(params).promise();
-        console.log('Data inserted successfully');
+        console.log('Data inserted successfully in table reservation');
         return {
             statusCode: 200,
             body: JSON.stringify({ "reservationId": uniqueId }),
@@ -345,8 +327,7 @@ async function checkForOverlappingReservations(event) {
     const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
     const params = {
         TableName: reservationDynamo,
-        KeyConditionExpression: 'tableNumber = :tableNumber AND #date = :date',
-        FilterExpression: '#slotTimeStart < :slotTimeEnd AND #slotTimeEnd > :slotTimeStart',
+        FilterExpression: 'tableNumber = :tableNumber AND #date = :date AND #slotTimeStart < :slotTimeEnd AND #slotTimeEnd > :slotTimeStart',
         ExpressionAttributeNames: {
             '#date': 'date',
             '#slotTimeStart': 'slotTimeStart',
@@ -361,8 +342,8 @@ async function checkForOverlappingReservations(event) {
     };
 
     try {
-        const data = await dynamodb.query(params).promise();
-        console.log("query for overlapping ",data)
+        const data = await dynamodb.scan(params).promise();
+        console.log("scan for overlapping reservation ",data)
         return data.Items.length > 0; // Returns true if there are overlapping reservations
     } catch (error) {
         console.error('Error querying for overlapping reservations:', error);
@@ -374,21 +355,16 @@ function initializeTableNames(env = 'default') {
         tablesDynamo = 'cmtr-bd1b882e-Tables'
         reservationDynamo = 'cmtr-bd1b882e-Reservations';
     }
-    console.log("Table 1 ", tablesDynamo)
-    console.log("Table 2 ", reservationDynamo)
 }
 exports.handler = async (event) => {
     console.log("+++lambda event is ", event);
     const userPoolId = process.env.CUPId;
-    console.log("+++userPoolId is ", userPoolId);
     const httpMethod = event.httpMethod
     const httpPath = event.path
     const tablesPattern = /^\/tables$/;
     const tablesWithIdPattern = /^\/tables\/(\d+)$/;
     try {
-        //initializeTableNames('local') // for local testing
-        console.log("httpMethod ", httpMethod)
-        console.log("httpPath ", httpPath)
+        // initializeTableNames('local') // for local testing
         if (httpMethod === 'POST' && httpPath === '/signup') {
             const signUpResult = await performCognitoSignUp(event, userPoolId)
             console.log("+++signUpResult is ", signUpResult);
@@ -398,12 +374,10 @@ exports.handler = async (event) => {
             console.log("+++signInResult is ", signInResult);
             return signInResult
         } else if (httpMethod === 'GET' && tablesPattern.test(httpPath)) {
-            console.log("inside getTables check")
             const getTablesResult = await getTables(event, userPoolId)
             console.log("+++getTablesResult is ", getTablesResult);
             return getTablesResult
         } else if (httpMethod === 'GET' && tablesWithIdPattern.test(httpPath)) {
-            console.log("inside getTablesById check")
             const getTablesByIdResult = await getTablesById(event, userPoolId)
             console.log("+++getTablesByIdResult is ", getTablesByIdResult);
             return getTablesByIdResult

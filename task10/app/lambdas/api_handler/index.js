@@ -2,6 +2,7 @@ const { AuthenticationService } = require("./cognito_service");
 const authService = new AuthenticationService();
 
 const AWS = require('aws-sdk');
+const dynamodb = new AWS.DynamoDB.DocumentClient();
 //const clientId = process.env.CUPClientId;
 
 const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
@@ -131,6 +132,50 @@ async function performCognitoSignIn(event, userPoolId) {
         );
     }
 }
+
+async function getTables(event, userPoolId) {
+    console.log("getTables event", event)
+    console.log("getTables userPoolId", userPoolId)
+    const queryStringParameters = event.queryStringParameters || {};
+    console.log("queryStringParameters ",queryStringParameters)
+    const tableId = queryStringParameters.tableId; 
+}
+
+async function postTables(event, userPoolId) {
+    console.log("postTables event", event)
+    console.log("postTables userPoolId", userPoolId)
+    const tableName = 'cmtr-bd1b882e-Tables-test';
+    const { id, number, places, isVip, minOrder } = JSON.parse(event.body)
+    const itemData = {
+        "id": id,
+        "number": number,
+        "places": places,
+        "isVip": isVip,
+        "minOrder": minOrder
+    }
+    const params = {
+        TableName: tableName,
+        Item: itemData
+    };
+    try {
+        console.log("db param ", params)
+        await dynamodb.put(params).promise();
+        console.log('Data inserted successfully');
+    } catch (error) {
+        console.error('Error inserting data into DynamoDB:', error);
+        throw error;
+    }
+}
+
+async function getReservations(event, userPoolId) {
+    console.log("getReservations event", event)
+    console.log("getReservations userPoolId", userPoolId)
+}
+
+async function postReservations(event, userPoolId) {
+    console.log("postReservations event", event)
+    console.log("postReservations userPoolId", userPoolId)
+}
 exports.handler = async (event) => {
     console.log("+++lambda event is ", event);
     const userPoolId = process.env.CUPId;
@@ -148,7 +193,23 @@ exports.handler = async (event) => {
             const signInResult = await performCognitoSignIn(event, userPoolId)
             console.log("+++signInResult is ", signInResult);
             return signInResult
-        } else {
+        } else if (httpMethod === 'GET' && httpPath === '/tables') {
+            const getTablesResult = await getTables(event, userPoolId)
+            console.log("+++getTablesResult is ", getTablesResult);
+            return getTablesResult
+        }else if (httpMethod === 'POST' && httpPath === '/tables') {
+            const postTableResult = await postTables(event, userPoolId)
+            console.log("+++postTableResult is ", postTableResult);
+            return postTableResult
+        }else if (httpMethod === 'GET' && httpPath === '/reservations') {
+            const getReservationsResult = await getReservations(event, userPoolId)
+            console.log("+++getReservationsResult is ", getReservationsResult);
+            return getReservationsResult
+        }else if (httpMethod === 'POST' && httpPath === '/reservations') {
+            const postReservationsResult = await postReservations(event, userPoolId)
+            console.log("+++postReservationsResult is ", postReservationsResult);
+            return postReservationsResult
+        }else {
             return buildResponse(
                 400,
                 `Bad Request. Request path: ${httpPath}. HTTP method: ${httpMethod}`

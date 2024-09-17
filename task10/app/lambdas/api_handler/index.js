@@ -177,27 +177,23 @@ async function getTablesById(event, userPoolId) {
     const partitionKeyValue = Number(queryId);
     const params = {
         TableName: tablesDynamo,
-        KeyConditionExpression: 'id = :partitionKeyValue',
-        ExpressionAttributeValues: {
-            ':partitionKeyValue': partitionKeyValue
+        Key: {
+            id: partitionKeyValue
         }
     };
     try {
-        let queryResults = [];
-        let lastEvaluatedKey = null;
-        do {
-            if (lastEvaluatedKey) {
-                params.ExclusiveStartKey = lastEvaluatedKey;
-            }
-            const data = await dynamodb.query(params).promise();
-            queryResults.push(...data.Items);
-            lastEvaluatedKey = data.LastEvaluatedKey;
-        } while (lastEvaluatedKey);
-
-        console.log("Query Results:", queryResults);
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ queryResults }),
+        const data = await dynamodb.get(params).promise();
+        console.log("Query Result:", data.Item);
+        if (data.Item) {
+            return {
+                statusCode: 200,
+                body: JSON.stringify(data.Item),
+            };
+        } else {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ message: "Item not found" }),
+            };
         }
     } catch (err) {
         console.error("Error Querying table:", err);

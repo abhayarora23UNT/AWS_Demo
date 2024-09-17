@@ -274,6 +274,30 @@ async function getReservations(event, userPoolId) {
 async function postReservations(event, userPoolId) {
     console.log("postReservations event", event)
     console.log("postReservations userPoolId", userPoolId)
+    
+    
+    const tableExists = await checkTableExists(reservationDynamo);
+    console.log("is table exists ", tableExists)
+    if (!tableExists) {
+        console.error(`Table ${reservationDynamo} does not exist.`);
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: `Table ${reservationDynamo} does not exist.` }),
+        };
+    }
+
+    // Check for overlapping reservations
+    const overlapExists = await checkForOverlappingReservations(event);
+    console.log("is overlapExists for reservation ", overlapExists)
+
+    if (overlapExists) {
+        console.error('Overlap with existing reservation detected.');
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: 'Reservation overlaps with an existing reservation.' }),
+        };
+    }
+
     const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
     const uniqueId = uuid.v4();
     const itemData = {
@@ -306,6 +330,48 @@ async function postReservations(event, userPoolId) {
     }
 }
 
+async function checkTableExists(tableName) {
+    try {
+        const describeTablePromise=await dynamodb.describeTable({ TableName: tableName }).promise();
+        console.log("describeTablePromise ",describeTablePromise)
+        return true;
+    } catch (error) {
+        console.error('Error describeTable:', error);
+        if (error.code === 'ResourceNotFoundException') {
+            return false;
+        }
+    }
+}
+
+// Function to check for overlapping reservations
+async function checkForOverlappingReservations(event) {
+    const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
+    const params = {
+        TableName: reservationDynamo,
+        KeyConditionExpression: 'tableNumber = :tableNumber AND #date = :date',
+        FilterExpression: '#slotTimeStart < :slotTimeEnd AND #slotTimeEnd > :slotTimeStart',
+        ExpressionAttributeNames: {
+            '#date': 'date',
+            '#slotTimeStart': 'slotTimeStart',
+            '#slotTimeEnd': 'slotTimeEnd',
+        },
+        ExpressionAttributeValues: {
+            ':tableNumber': tableNumber,
+            ':date': date,
+            ':slotTimeStart': slotTimeStart,
+            ':slotTimeEnd': slotTimeEnd,
+        }
+    };
+
+    try {
+        const data = await dynamodb.query(params).promise();
+        console.log("query for overlapping ",data)
+        return data.Items.length > 0; // Returns true if there are overlapping reservations
+    } catch (error) {
+        console.error('Error querying for overlapping reservations:', error);
+        throw error; // Re-throw error to be handled by the calling function
+    }
+}
 function initializeTableNames(env = 'default') {
     if (env == 'local') {
         tablesDynamo = 'cmtr-bd1b882e-Tables'

@@ -324,8 +324,7 @@ exports.handler = async (event) => {
             console.log("+++signInResult is ", signInResult);
             return signInResult
         } else if (httpMethod === 'GET' && httpPath === '/tables') {
-            const queryId = event.pathParameters.tableId;
-            if (queryId) {
+            if (event.pathParameters && event.pathParameters.tableId) {
                 const getTablesByIdResult = await getTablesById(event, userPoolId)
                 console.log("+++getTablesByIdResult is ", getTablesByIdResult);
                 return getTablesByIdResult

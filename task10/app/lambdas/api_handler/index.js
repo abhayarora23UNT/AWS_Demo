@@ -163,7 +163,7 @@ async function getTables(event, userPoolId) {
         console.error("Error scanning table:", err);
         return buildResponse(
             400,
-            `Bad request syntax or unsupported method ,error: ${error}`
+            `Bad request syntax or unsupported method ,error: ${err}`
         );
     }
 }
@@ -206,7 +206,7 @@ async function getTablesById(event, userPoolId) {
         console.error("Error Querying table:", err);
         return buildResponse(
             400,
-            `Bad request syntax or unsupported method ,error: ${error}`
+            `Bad request syntax or unsupported method ,error: ${err}`
         );
     }
 }
@@ -253,19 +253,28 @@ async function getReservations(event, userPoolId) {
     const params = {
         TableName: tableName,
     };
+    let scanResults = [];
+    let lastEvaluatedKey = null;
     try {
-        const data = await dynamodb.send(new ScanCommand(params));
-        const tableRecords = data.Items;
-        console.log("Scan succeeded:", tableRecords);
+        do {
+            if (lastEvaluatedKey) {
+                params.ExclusiveStartKey = lastEvaluatedKey;
+            }
+            const data = await dynamodb.scan(params).promise();
+            scanResults.push(...data.Items);
+            lastEvaluatedKey = data.LastEvaluatedKey;
+        } while (lastEvaluatedKey);
+
+        console.log("Scan succeeded:", scanResults);
         return {
             statusCode: 200,
-            body: JSON.stringify({ "reservations": tableRecords }),
+            body: JSON.stringify({ "reservations": scanResults }),
         }
     } catch (err) {
         console.error("Error scanning table:", err);
         return buildResponse(
             400,
-            `Bad request syntax or unsupported method ,error: ${error}`
+            `Bad request syntax or unsupported method ,error: ${err}`
         );
     }
 }

@@ -4,6 +4,7 @@ const authService = new AuthenticationService();
 const AWS = require('aws-sdk');
 const uuid = require('uuid');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
+const dynamodbAdmin = new AWS.DynamoDB();
 //const clientId = process.env.CUPClientId;
 
 let tablesDynamo='cmtr-bd1b882e-Tables-test'
@@ -332,7 +333,7 @@ async function postReservations(event, userPoolId) {
 
 async function checkTableExists(tableName) {
     try {
-        const describeTablePromise=await dynamodb.describeTable({ TableName: tableName }).promise();
+        const describeTablePromise=await dynamodbAdmin.describeTable({ TableName: tableName }).promise();
         console.log("describeTablePromise ",describeTablePromise)
         return true;
     } catch (error) {

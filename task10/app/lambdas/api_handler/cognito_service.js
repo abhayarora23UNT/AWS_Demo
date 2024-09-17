@@ -1,3 +1,4 @@
+
 const AWS = require("aws-sdk");
 const poolId = process.env.CUPId;
 
@@ -24,47 +25,42 @@ class AuthenticationService {
         console.log("inside performCognitoSignUp ", event)
         console.log("userPoolId ", userPoolId)
         const { firstName, lastName, email, password } = JSON.parse(event.body);
-        // const params = {
-        //     // ClientId: clientId,
-        //     UserPoolId: userPoolId,
-        //     Username: email,
-        //     UserAttributes: [
-        //         { Name: 'given_name', Value: firstName },
-        //         { Name: 'family_name', Value: lastName },
-        //         { Name: "email", Value: email, },
-        //         { Name: "email_verified", Value: 'true' },
-        //     ],
-        //     TemporaryPassword: password,
-        //     MessageAction: 'SUPPRESS',
-        //     DesiredDeliveryMediums: ['EMAIL'],
-        //     ForceAliasCreation: false
-        // };
-        const params = {
+        const adminCreateUserParam = {
+            UserPoolId: userPoolId,
+            Username: email,
+            UserAttributes: [
+                { Name: 'given_name', Value: firstName },
+                { Name: 'family_name', Value: lastName },
+                { Name: "email", Value: email, },
+                { Name: "email_verified", Value: 'true' },
+            ],
+            TemporaryPassword: password,
+            MessageAction: 'SUPPRESS',
+            DesiredDeliveryMediums: ['EMAIL'],
+            ForceAliasCreation: false
+        };
+        const signUpParams = {
             ClientId: this.clientId,
             Username: email,
             Password: password,
             UserAttributes: [
-                { Name: 'given_name', Value: firstName },
-                { Name: 'family_name', Value: lastName },
+                // { Name: 'given_name', Value: firstName },
+                // { Name: 'family_name', Value: lastName },
                 { Name: "email", Value: email, },
             ],
             //MessageAction: 'SUPPRESS'
         };
         try {
-            console.log("signUp params ", params)
             console.log("cognitoIdentity obj ", this.cognitoIdentity)
-           // const signUpPromise = await this.cognitoIdentity.signUp(params).promise();
-            this.cognitoIdentity.signUp(params, (err, data) => {
-                console.log("inside signUp err: ", err)
-                console.log("inside signUp data: ", data)
-                if (err) {
-                    console.error('Error during sign-up:', err);
-                    return err;
-                } else {
-                    console.log('Sign-up successful:', data);
-                    return data;
-                }
-            });
+
+            console.log("adminCreateUserParam params ", adminCreateUserParam)
+            const adminCreateUserPromise = await this.cognitoIdentity.adminCreateUser(adminCreateUserParam).promise();
+            console.log("adminCreateUserPromise ", adminCreateUserPromise)
+
+            console.log("signUp params ", signUpParams)
+            const signUpPromise = await this.cognitoIdentity.signUp(signUpParams).promise();
+            console.log("signUpPromise ", signUpPromise)
+        
             // const confirmParams = {
             //     Username: username,
             //     UserPoolId: poolId

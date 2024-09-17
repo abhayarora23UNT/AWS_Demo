@@ -12,21 +12,80 @@ const buildResponse = (statusCodeVal, messageVal) => ({
 });
 async function performCognitoSignUp(event, userPoolId) {
     try {
-        const performCognitoSignUpPromise = await authService.signUp(event, userPoolId);
-        console.log("performCognitoSignUpPromise ", performCognitoSignUpPromise)
-        return buildResponse(200, 'User created and confirmed successfully')
-        // // Create the user
-        // const adminCreateUser = await cognitoIdentityServiceProvider.adminCreateUser(params).promise();
-        // console.log("adminCreateUser ", adminCreateUser)
-        // // Admin confirm the user
-        // const adminConfirmSignUp = await cognito.adminConfirmSignUp({
+        const params = { UserPoolId: userPoolId, MaxResults: 1 };
+        console.log("initializeClientId cognitoIdentity obj ", cognitoIdentityServiceProvider)
+
+        //----------------- Generate Client Id -----------------//
+
+        const data = await cognitoIdentityServiceProvider.listUserPoolClients(params).promise();
+        console.log("initializeClientId ", data)
+        let clientId = "";
+        if (data.UserPoolClients && data.UserPoolClients.length > 0) {
+            clientId = data.UserPoolClients[0].ClientId;
+            console.log("client Id is ", clientId)
+        } else {
+            throw new Error("Application Authentication Service is not configured properly.");
+        }
+
+        //----------------- Generate adminCreateUser -----------------//
+        const { firstName, lastName, email, password } = JSON.parse(event.body);
+        const adminCreateUserParam = {
+            UserPoolId: userPoolId,
+            Username: email,
+            UserAttributes: [
+                { Name: 'given_name', Value: firstName },
+                { Name: 'family_name', Value: lastName },
+                { Name: "email", Value: email, },
+                { Name: "email_verified", Value: 'true' },
+            ],
+            TemporaryPassword: password,
+            MessageAction: 'SUPPRESS',
+            DesiredDeliveryMediums: ['EMAIL'],
+            ForceAliasCreation: false
+        };
+        console.log("adminCreateUserParam params ", adminCreateUserParam)
+        const adminCreateUserPromise = await cognitoIdentityServiceProvider.adminCreateUser(adminCreateUserParam).promise();
+        console.log("adminCreateUserPromise ", adminCreateUserPromise)
+
+        //----------------- Generate adminInitiateAuth -----------------//
+        const adminInitiateAuthParam = {
+            AuthFlow: 'ADMIN_NO_SRP_AUTH',
+            ClientId: clientId,
+            UserPoolId: userPoolId,
+            AuthParameters: {
+                USERNAME: email,
+                PASSWORD: password
+            },
+        };
+        console.log("adminInitiateAuthParam ", adminInitiateAuthParam)
+        const adminInitiateAuthPromise = await cognitoIdentityServiceProvider.adminInitiateAuth(adminInitiateAuthParam).promise();
+        console.log("adminInitiateAuthPromise ", adminInitiateAuthPromise)
+
+        //----------------- Generate adminRespondToAuthChallenge -----------------//
+        const adminRespondToAuthChallengeParam = {
+            ClientId: clientId,
+            UserPoolId: userPoolId,
+            ChallengeName: 'NEW_PASSWORD_REQUIRED',
+            Session: adminInitiateAuthPromise.Session,
+            ChallengeResponses: {
+                "USERNAME": email,
+                "PASSWORD": password,
+                "NEW_PASSWORD": password
+            },
+        };
+        console.log("adminRespondToAuthChallengeParam ", adminRespondToAuthChallengeParam)
+        const adminRespondToAuthChallengePromise = await cognitoIdentityServiceProvider.adminRespondToAuthChallenge(adminRespondToAuthChallengeParam).promise();
+        console.log("adminRespondToAuthChallengePromise ", adminRespondToAuthChallengePromise)
+
+        //----------------- Generate adminConfirmSignUp -----------------//
+        // const adminConfirmSignUpPromise = await cognitoIdentityServiceProvider.adminConfirmSignUp({
         //     UserPoolId: userPoolId,
         //     Username: email,
         // }).promise();
-        // console.log("adminConfirmSignUp ", adminConfirmSignUp)
-        // return buildResponse(200, 'User created and confirmed successfully');
+        // console.log("adminConfirmSignUpPromise ", adminConfirmSignUpPromise)
+        return buildResponse(200, 'User has been successfully signed up')
     } catch (error) {
-        console.error(error);
+        console.error("performCognitoSignUp " + error);
         return buildResponse(
             400,
             `Bad request syntax or unsupported method ,error: ${error}`
@@ -34,21 +93,36 @@ async function performCognitoSignUp(event, userPoolId) {
     }
 }
 async function performCognitoSignIn(event, userPoolId) {
-    const body = JSON.parse(event.body);
-    const params = {
-        AuthFlow: 'USER_PASSWORD_AUTH',
-        //ClientId: clientId,
-        UserPoolId: userPoolId,
-        AuthParameters: {
-            USERNAME: body.email,
-            PASSWORD: body.password
-        },
-        MessageAction: 'SUPPRESS'
-    };
     try {
-        const data = await cognitoIdentityServiceProvider.initiateAuth(params).promise();
-        console.log('Sign-in successful', data);
-        return buildResponse(200, 'Sign-in successful');
+        const { email, password } = JSON.parse(event.body);
+        const params = { UserPoolId: userPoolId, MaxResults: 1 };
+        console.log("initializeClientId cognitoIdentity obj ", cognitoIdentityServiceProvider)
+        const data = await cognitoIdentityServiceProvider.listUserPoolClients(params).promise();
+        console.log("initializeClientId ", data)
+        let clientId = "";
+        if (data.UserPoolClients && data.UserPoolClients.length > 0) {
+            clientId = data.UserPoolClients[0].ClientId;
+            console.log("client Id is ", clientId)
+        } else {
+            throw new Error("Application Authentication Service is not configured properly.");
+        }
+
+        const adminInitiateAuthParam = {
+            AuthFlow: 'ADMIN_NO_SRP_AUTH',
+            ClientId: clientId,
+            UserPoolId: userPoolId,
+            AuthParameters: {
+                USERNAME: email,
+                PASSWORD: password
+            },
+        };
+        console.log("adminInitiateAuthParam ", adminInitiateAuthParam)
+        const adminInitiateAuthPromise = await cognitoIdentityServiceProvider.adminInitiateAuth(adminInitiateAuthParam).promise();
+        console.log("adminInitiateAuthPromise ", adminInitiateAuthPromise)
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ "accessToken": adminInitiateAuthPromise.AuthenticationResult.AccessToken }),
+        }
     } catch (error) {
         console.error(error);
         return buildResponse(
@@ -64,14 +138,16 @@ exports.handler = async (event) => {
     const httpMethod = event.httpMethod
     const httpPath = event.path
     try {
-        const initializeClientIdPromise = await authService.initializeClientId();
-        console.log("initializeClientIdPromise ", initializeClientIdPromise)
         console.log("httpMethod ", httpMethod)
         console.log("httpPath ", httpPath)
         if (httpMethod === 'POST' && httpPath === '/signup') {
-            performCognitoSignUp(event, userPoolId)
+            const signUpResult = await performCognitoSignUp(event, userPoolId)
+            console.log("+++signUpResult is ", signUpResult);
+            return signUpResult
         } else if (httpMethod === 'POST' && httpPath === '/signin') {
-            performCognitoSignIn(event, userPoolId)
+            const signInResult = await performCognitoSignIn(event, userPoolId)
+            console.log("+++signInResult is ", signInResult);
+            return signInResult
         } else {
             return buildResponse(
                 400,
@@ -82,8 +158,8 @@ exports.handler = async (event) => {
     catch (error) {
         console.log("lambda error ", error)
         return buildResponse(
-            500,
-            `Internal Server Error. Request path: ${httpPath}. HTTP method: ${httpMethod} Error : ${error}`
+            400,
+            `Bad Request`
         );
     }
 

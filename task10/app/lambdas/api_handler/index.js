@@ -169,10 +169,8 @@ async function getTables(event, userPoolId) {
 }
 
 async function getTablesById(event, userPoolId) {
-    console.log("getTables event", event)
-    console.log("getTables userPoolId", userPoolId)
-    const queryStringParameters = event.queryStringParameters || {};
-    console.log("queryStringParameters ", queryStringParameters)
+    console.log("getTablesById event", event)
+    console.log("getTablesById userPoolId", userPoolId)
     const queryId = event.pathParameters.tableId
     console.log("queryId in param is ", queryId)
 
@@ -321,6 +319,8 @@ exports.handler = async (event) => {
     console.log("+++userPoolId is ", userPoolId);
     const httpMethod = event.httpMethod
     const httpPath = event.path
+    const tablesPattern = /^\/tables$/;
+    const tablesWithIdPattern = /^\/tables\/(\d+)$/;
     try {
         console.log("httpMethod ", httpMethod)
         console.log("httpPath ", httpPath)
@@ -332,16 +332,16 @@ exports.handler = async (event) => {
             const signInResult = await performCognitoSignIn(event, userPoolId)
             console.log("+++signInResult is ", signInResult);
             return signInResult
-        } else if (httpMethod === 'GET' && httpPath === '/tables') {
-            if (event.pathParameters && event.pathParameters.tableId) {
-                const getTablesByIdResult = await getTablesById(event, userPoolId)
-                console.log("+++getTablesByIdResult is ", getTablesByIdResult);
-                return getTablesByIdResult
-            } else {
-                const getTablesResult = await getTables(event, userPoolId)
-                console.log("+++getTablesResult is ", getTablesResult);
-                return getTablesResult
-            }
+        } else if (httpMethod === 'GET' && tablesPattern.test(httpPath)) {
+            console.log("inside getTables check")
+            const getTablesResult = await getTables(event, userPoolId)
+            console.log("+++getTablesResult is ", getTablesResult);
+            return getTablesResult
+        } else if (httpMethod === 'GET' && tablesWithIdPattern.test(httpPath)) {
+            console.log("inside getTablesById check")
+            const getTablesByIdResult = await getTablesById(event, userPoolId)
+            console.log("+++getTablesByIdResult is ", getTablesByIdResult);
+            return getTablesByIdResult
         } else if (httpMethod === 'POST' && httpPath === '/tables') {
             const postTableResult = await postTables(event, userPoolId)
             console.log("+++postTableResult is ", postTableResult);

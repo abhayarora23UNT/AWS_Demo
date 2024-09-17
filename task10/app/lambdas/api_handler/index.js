@@ -254,14 +254,23 @@ async function getReservations(event, userPoolId) {
 
 async function postReservations(event, userPoolId) {
     console.log("postReservations event", event)
-    
-    const tableExists = await checkTableExists(reservationDynamo);
-    console.log("is table exists ", tableExists)
-    if (!tableExists) {
+    const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
+
+    const tableExistsInDB = await checkTableExistsInDB(reservationDynamo);
+    console.log("is table exists in DB ", tableExistsInDB)
+    if (!tableExistsInDB) {
         console.error(`Table ${reservationDynamo} does not exist.`);
         return {
             statusCode: 400,
             body: JSON.stringify({ message: `Table ${reservationDynamo} does not exist.` }),
+        };
+    }
+
+    const tableNumberExistsForReservation = await checkTableNumberExists(tableNumber);
+    if (!tableNumberExistsForReservation) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: `Table Nunber ${tableNumber} does not exist` })
         };
     }
 
@@ -277,7 +286,7 @@ async function postReservations(event, userPoolId) {
         };
     }
 
-    const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
+    
     const uniqueId = uuid.v4();
     const itemData = {
         id: uuid.v4(), // Generate a unique ID
@@ -309,7 +318,7 @@ async function postReservations(event, userPoolId) {
     }
 }
 
-async function checkTableExists(tableName) {
+async function checkTableExistsInDB(tableName) {
     try {
         const describeTablePromise=await dynamodbAdmin.describeTable({ TableName: tableName }).promise();
         console.log("describeTablePromise ",describeTablePromise)
@@ -348,6 +357,24 @@ async function checkForOverlappingReservations(event) {
     } catch (error) {
         console.error('Error querying for overlapping reservations:', error);
         throw error; // Re-throw error to be handled by the calling function
+    }
+}
+
+async function checkTableNumberExists(tableNumber) {
+    const params = {
+        TableName: tablesDynamo,
+        Key: {
+            number: tableNumber
+        }
+    };
+
+    try {
+        const result = await dynamodb.get(params).promise();
+        console.log("checkTableNumberExists result",result)
+        return !!result.Item; // Returns true if item exists
+    } catch (error) {
+        console.error('Error checking table number existence:', error);
+        throw error; // Re-throw error to be handled by the main handler
     }
 }
 function initializeTableNames(env = 'default') {

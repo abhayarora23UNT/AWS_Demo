@@ -7,6 +7,7 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 const dynamodbAdmin = new AWS.DynamoDB();
 //const clientId = process.env.CUPClientId;
 
+const tableNumberIndex = 'NumberIndex'; // GSI
 let tablesDynamo='cmtr-bd1b882e-Tables-test'
 let reservationDynamo='cmtr-bd1b882e-Reservations-test';
 const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
@@ -363,15 +364,17 @@ async function checkForOverlappingReservations(event) {
 async function checkTableNumberExists(tableNumber) {
     const params = {
         TableName: tablesDynamo,
-        Key: {
-            number: tableNumber
+        IndexName: tableNumberIndex, // The GSI name
+        KeyConditionExpression: 'number = :tableNumber',
+        ExpressionAttributeValues: {
+            ':tableNumber': tableNumber
         }
     };
 
     try {
-        const result = await dynamodb.get(params).promise();
-        console.log("checkTableNumberExists result",result)
-        return !!result.Item; // Returns true if item exists
+        const result = await dynamodb.query(params).promise();
+        console.log("checkTableNumberExists result ",result)
+        return result.Items.length > 0;
     } catch (error) {
         console.error('Error checking table number existence:', error);
         throw error; // Re-throw error to be handled by the main handler

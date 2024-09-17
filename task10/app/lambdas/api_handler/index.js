@@ -122,7 +122,7 @@ async function performCognitoSignIn(event, userPoolId) {
         console.log("adminInitiateAuthPromise ", adminInitiateAuthPromise)
         return {
             statusCode: 200,
-            body: JSON.stringify({ "accessToken": adminInitiateAuthPromise.AuthenticationResult.AccessToken }),
+            body: JSON.stringify({ "accessToken": adminInitiateAuthPromise.AuthenticationResult.IdToken }),
         }
     } catch (error) {
         console.error(error);

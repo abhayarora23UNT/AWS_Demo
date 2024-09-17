@@ -137,8 +137,8 @@ async function performCognitoSignIn(event, userPoolId) {
 async function getTables(event, userPoolId) {
     console.log("getTables event", event)
     console.log("getTables userPoolId", userPoolId)
-    //const tableName = 'cmtr-bd1b882e-Tables-test';
-    const tableName = 'cmtr-bd1b882e-Tables';
+    const tableName = 'cmtr-bd1b882e-Tables-test';
+    // const tableName = 'cmtr-bd1b882e-Tables';
     const params = {
         TableName: tableName,
     };
@@ -174,8 +174,8 @@ async function getTablesById(event, userPoolId) {
     const queryId = event.pathParameters.tableId
     console.log("queryId in param is ", queryId)
 
-    //const tableName = 'cmtr-bd1b882e-Tables-test';
-    const tableName = 'cmtr-bd1b882e-Tables';
+    const tableName = 'cmtr-bd1b882e-Tables-test';
+    // const tableName = 'cmtr-bd1b882e-Tables';
     const params = {
         TableName: tableName,
         KeyConditionExpression: 'id = :partitionKeyValue',
@@ -212,8 +212,8 @@ async function getTablesById(event, userPoolId) {
 async function postTables(event, userPoolId) {
     console.log("postTables event", event)
     console.log("postTables userPoolId", userPoolId)
-    const tableName = 'cmtr-bd1b882e-Tables';
-    //const tableName = 'cmtr-bd1b882e-Tables-test';
+    // const tableName = 'cmtr-bd1b882e-Tables';
+    const tableName = 'cmtr-bd1b882e-Tables-test';
     const { id, number, places, isVip, minOrder } = JSON.parse(event.body)
     const itemData = {
         "id": id,
@@ -246,8 +246,8 @@ async function postTables(event, userPoolId) {
 async function getReservations(event, userPoolId) {
     console.log("getReservations event", event)
     console.log("getReservations userPoolId", userPoolId)
-    //const tableName = 'cmtr-bd1b882e-Reservations-test';
-    const tableName = 'cmtr-bd1b882e-Reservations';
+    const tableName = 'cmtr-bd1b882e-Reservations-test';
+    //const tableName = 'cmtr-bd1b882e-Reservations';
     const params = {
         TableName: tableName,
     };
@@ -280,8 +280,8 @@ async function getReservations(event, userPoolId) {
 async function postReservations(event, userPoolId) {
     console.log("postReservations event", event)
     console.log("postReservations userPoolId", userPoolId)
-    //const tableName = 'cmtr-bd1b882e-Reservations-test';
-    const tableName = 'cmtr-bd1b882e-Reservations';
+    const tableName = 'cmtr-bd1b882e-Reservations-test';
+    //const tableName = 'cmtr-bd1b882e-Reservations';
     const { tableNumber, clientName, phoneNumber, date, slotTimeStart, slotTimeEnd } = JSON.parse(event.body)
     const uniqueId = uuid.v4();
     const itemData = {

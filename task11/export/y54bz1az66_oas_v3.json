@@ -17,6 +17,8 @@
   "paths": {
     "/reservations": {
       "get": {
+        "description": "List the reservations",
+        "summary": "List all made reservations",
         "responses": {
           "200": {
             "description": "200 response",
@@ -34,6 +36,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Smth went wrong"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         },
         "security": [
@@ -57,6 +65,8 @@
         }
       },
       "post": {
+        "description": "Ask For a Reeservation",
+        "summary": "Ask For a Reeservation",
         "responses": {
           "200": {
             "description": "200 response",
@@ -72,6 +82,16 @@
                 "schema": {
                   "$ref": "#/components/schemas/Empty"
                 }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Reservation to add",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reservation"
               }
             }
           }
@@ -147,6 +167,8 @@
     },
     "/tables": {
       "get": {
+        "description": "Lists all tables",
+        "summary": "Lists all tables",
         "responses": {
           "200": {
             "description": "200 response",
@@ -187,6 +209,8 @@
         }
       },
       "post": {
+        "description": "Add new table",
+        "summary": "Add new table",
         "responses": {
           "200": {
             "description": "200 response",
@@ -202,6 +226,16 @@
                 "schema": {
                   "$ref": "#/components/schemas/Empty"
                 }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Table to add",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Empty"
               }
             }
           }
@@ -277,6 +311,8 @@
     },
     "/signin": {
       "post": {
+        "summary": "Sign in User",
+        "description": "Sign in User",
         "responses": {
           "200": {
             "description": "200 response",
@@ -292,6 +328,16 @@
                 "schema": {
                   "$ref": "#/components/schemas/Empty"
                 }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Sign in for user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignIn"
               }
             }
           }
@@ -362,6 +408,8 @@
     },
     "/signup": {
       "post": {
+        "description": "Sign up",
+        "summary": "Sign up new user",
         "responses": {
           "200": {
             "description": "200 response",
@@ -377,6 +425,16 @@
                 "schema": {
                   "$ref": "#/components/schemas/Empty"
                 }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Sign up for new user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUp"
               }
             }
           }
@@ -447,6 +505,8 @@
     },
     "/tables/{tableId}": {
       "get": {
+        "description": "Get table info",
+        "summary": "Get all information about specific table",
         "parameters": [
           {
             "name": "tableId",
@@ -611,6 +671,45 @@
       "Empty": {
         "title": "Empty Schema",
         "type": "object"
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string"
+          },
+          "tableId": {
+            "type": "string"
+          }
+        },
+        "required": ["reservationId", "tableId"]
+      },
+      "SignIn": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": ["username", "password"]
+      },
+      "SignUp": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": ["username", "password", "email"]
       }
     },
     "securitySchemes": {

@@ -61,7 +61,7 @@
     "global_indexes": [],
     "autoscaling": []
   },
-  "${userpool_name}": {
+  "${booking_userpool}": {
     "resource_type": "cognito_idp",
     "password_policy": {
       "minimum_length": 12,

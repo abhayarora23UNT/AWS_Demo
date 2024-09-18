@@ -18,19 +18,19 @@
       "resource_type": "dynamodb_table"
     },
     {
-      "resource_name": "simple-booking-userpool",
+      "resource_name": "${userpool_name}",
       "resource_type": "cognito_idp"
     }
   ],
   "event_sources": [],
   "env_variables": {
     "CUPId": {
-      "resource_name": "simple-booking-userpool",
+      "resource_name": "${userpool_name}",
       "resource_type": "cognito_idp",
       "parameter": "id"
     },
     "CUPClientId": {
-      "resource_name": "simple-booking-userpool",
+      "resource_name": "${userpool_name}",
       "resource_type": "cognito_idp",
       "parameter": "client_id"
     }

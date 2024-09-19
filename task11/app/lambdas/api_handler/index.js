@@ -8,8 +8,7 @@ const dynamodbAdmin = new AWS.DynamoDB();
 const responseHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': '*',
-    'Accept-Version': '1.0', // Adjust the version as needed
+    'Access-Control-Allow-Methods': '*'
 };
 
 const tableNumberIndex = 'NumberIndex'; // GSI
@@ -19,7 +18,7 @@ const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
 
 const buildResponse = (statusCodeVal, messageVal) => ({
     statusCode: statusCodeVal,
-    responseHeaders,
+    headers:responseHeaders,
     body: JSON.stringify({ statusCode: statusCodeVal, message: messageVal }),
 });
 async function performCognitoSignUp(event, userPoolId) {
@@ -121,7 +120,7 @@ async function performCognitoSignIn(event, userPoolId) {
         console.log("adminInitiateAuthPromise ", adminInitiateAuthPromise)
         return {
             statusCode: 200,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ "accessToken": adminInitiateAuthPromise.AuthenticationResult.IdToken }),
         }
     } catch (error) {
@@ -153,7 +152,7 @@ async function getTables(event, userPoolId) {
         console.log("getTables Scan succeeded:", scanResults);
         return {
             statusCode: 200,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ "tables": scanResults }),
         }
     } catch (err) {
@@ -182,13 +181,13 @@ async function getTablesById(event, userPoolId) {
         if (data.Item) {
             return {
                 statusCode: 200,
-                responseHeaders,
+                headers:responseHeaders,
                 body: JSON.stringify(data.Item),
             };
         } else {
             return {
                 statusCode: 404,
-                responseHeaders,
+                headers:responseHeaders,
                 body: JSON.stringify({ message: "Item not found" }),
             };
         }
@@ -221,7 +220,7 @@ async function postTables(event, userPoolId) {
         console.log('Data inserted successfully in table Tables');
         return {
             statusCode: 200,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ "id": id }),
         }
     } catch (error) {
@@ -253,7 +252,7 @@ async function getReservations(event, userPoolId) {
         console.log("getReservations Scan succeeded:", scanResults);
         return {
             statusCode: 200,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ "reservations": scanResults }),
         }
     } catch (err) {
@@ -275,7 +274,7 @@ async function postReservations(event, userPoolId) {
         console.error(`Table ${reservationDynamo} does not exist.`);
         return {
             statusCode: 400,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ message: `Table ${reservationDynamo} does not exist.` }),
         };
     }
@@ -284,7 +283,7 @@ async function postReservations(event, userPoolId) {
     if (!tableNumberExistsForReservation) {
         return {
             statusCode: 400,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ message: `Table Number ${tableNumber} does not exist` })
         };
     }
@@ -297,7 +296,7 @@ async function postReservations(event, userPoolId) {
         console.error('Overlap with existing reservation detected.');
         return {
             statusCode: 400,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ message: 'Reservation overlaps with an existing reservation.' }),
         };
     }
@@ -323,7 +322,7 @@ async function postReservations(event, userPoolId) {
         console.log('Data inserted successfully in table reservation');
         return {
             statusCode: 200,
-            responseHeaders,
+            headers:responseHeaders,
             body: JSON.stringify({ "reservationId": uniqueId }),
         }
     } catch (error) {

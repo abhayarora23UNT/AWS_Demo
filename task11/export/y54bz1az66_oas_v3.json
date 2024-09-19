@@ -56,7 +56,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -108,7 +108,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -153,7 +153,7 @@
               "responseParameters": {
                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -200,7 +200,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -252,7 +252,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -297,7 +297,7 @@
               "responseParameters": {
                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -349,7 +349,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -394,7 +394,7 @@
               "responseParameters": {
                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -446,7 +446,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -491,7 +491,7 @@
               "responseParameters": {
                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -548,7 +548,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -598,7 +598,7 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
@@ -653,7 +653,7 @@
               "responseParameters": {
                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.access-control-allow-origin": "'*'"
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
               }
             }
           },
